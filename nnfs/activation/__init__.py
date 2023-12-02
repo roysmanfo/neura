@@ -1,4 +1,4 @@
-from activation import (
+from .activation import (
     ActivationFunction,
     Basic,
     Derivative,

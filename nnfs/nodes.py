@@ -1,6 +1,6 @@
 import random as _random
 from typing import Optional
-import activation as _activation
+import nnfs.activation as _activation
 
 class Node:
     def __init__(self, activation: Optional[_activation.ActivationFunction] = None) -> None:

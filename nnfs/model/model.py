@@ -6,7 +6,7 @@ from nnfs.layers import Layer
 
 
 class Model:
-    def __init__(self, layers: Optional[list[Layer]], name: Optional[str] = None, learning_rate: float = .5) -> None:
+    def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .5) -> None:
         self.layers: list[Layer] = []
         self.learning_rate = learning_rate        
         self.name = str(name) or "Model"
