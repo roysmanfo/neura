@@ -4,10 +4,15 @@ from activation import ActivationFunction, Basic, Sigmoid, ReLu, LeakyReLu, Tanh
 from numpy import mean
 
 class Node:
-    def __init__(self, activation: Optional[Union[ActivationFunction, str]] = None) -> None:
+    def __init__(self, activation: Optional[ActivationFunction] = None) -> None:
         self.weights: list[float] = []
         self.w = random.random()
-        self.activation = activation or Basic()
+        self.activation: ActivationFunction
+        
+        if activation and isinstance(activation, ActivationFunction):
+            self.activation = activation
+        else: 
+            self.activation = Basic()
 
     def __str__(self) -> str:
         return f"Node(activation='{self.activation.name}', weigths={self.weights})"
@@ -30,7 +35,7 @@ class Node:
 
 
 class Layer:
-    def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[str] = None) -> None:
+    def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[Union[str, ActivationFunction]] = None) -> None:
         self._last_layer = False
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
@@ -62,6 +67,8 @@ class Layer:
         return f"Layer(nodes={len(self.nodes)}, bias={self.bias})"
     
     def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, Layer):
+            return False
         return len(self.nodes) == len(__value.nodes) and all([node == __value.nodes[index] for index, node in enumerate(self.nodes)]) and self.bias == __value.bias
 
     def _analize(self, x: float, conn_n: Optional[int] = None) -> float:
@@ -77,7 +84,7 @@ class Layer:
         Evaluate the values to pass to the next layer/output
         """
         v = []
-        if not self._last_layer or next_nodes:
+        if not self._last_layer and next_nodes:
             for i, _ in enumerate(next_nodes):
                 v.append(self._analize(x, i))
         else:
@@ -92,11 +99,12 @@ class NeuralNetwork:
         self.layers: list[Layer] = []
         self.learning_rate = learning_rate        
         self.name = str(name) or "NeuralNetwork"
-
-        for layer in layers:
-            if not isinstance(layer, Layer):
-                raise ValueError(f"invalid layer supplied: '{layer}'")
-            self.add_layer(layer)
+        
+        if layers:
+            for layer in layers:
+                if not isinstance(layer, Layer):
+                    raise ValueError(f"invalid layer supplied: '{layer}'")
+                self.add_layer(layer)
 
     def add_layer(self, layer: Layer):
         """
@@ -149,10 +157,11 @@ LAYERS:
     def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
         res = []
         values = list(values)
-
+        pred = 0
         for i, layer in enumerate(self.layers):
             if verbose:
                 print(f"predicting (layer: {i} / {len(self.layers)})", end="\r")
+                pred = i
 
             for val in values:
                 layer_output = layer.calc(val, self.layers[i + 1].nodes) if i < len(self.layers) - 1 else layer.calc(val, None)
@@ -165,6 +174,6 @@ LAYERS:
             res.clear()
 
         if verbose:
-            print(f"predicting (layer: {i} / {len(self.layers)})")
+            print(f"predicting (layer: {pred} / {len(self.layers)})")
        
         return values
