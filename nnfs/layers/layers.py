@@ -15,9 +15,6 @@ class Layer(_ABC):
         if isinstance(activation, _activation.ActivationFunction):
             self.activation = activation
         
-        elif activation is None:
-            self.activation = _activation.Basic()
-        
         elif isinstance(activation, str):
             match activation:
                 case "sigmoid": self.activation = _activation.Sigmoid()
@@ -28,13 +25,16 @@ class Layer(_ABC):
                 case "basic": self.activation = _activation.Basic()
                 case _: raise ValueError(f"Invaid type for activation: '{activation}'")
         
+        elif not activation:
+            self.activation = _activation.Basic()
+            
         else:
             raise ValueError(f"Invaid type activation: {type(activation)} is not (str, ActivationFunction, None)")
         
         self.nodes: list[Node] = [Node(self.activation) for _ in range(units)]
         self.bias = bias if bias else 0
 
-
+    
     def __str__(self) -> str:
         return f"Layer(nodes={len(self.nodes)}, bias={self.bias})"
     
@@ -42,6 +42,12 @@ class Layer(_ABC):
         if not isinstance(__value, Layer):
             return False
         return len(self.nodes) == len(__value.nodes) and all([node == __value.nodes[index] for index, node in enumerate(self.nodes)]) and self.bias == __value.bias
+
+    def is_last_layer(self) -> bool:
+        return self._last_layer
+
+    def set_is_last_layer(self, val: bool) -> None:
+        self._last_layer = val
 
     @_abstractmethod
     def _analize(self, x: float, conn_n: Optional[int] = None) -> float:

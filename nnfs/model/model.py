@@ -13,7 +13,7 @@ class Model:
         
         if layers:
             for layer in layers:
-                if not isinstance(layer, Layer):
+                if not layer:
                     raise ValueError(f"invalid layer supplied: '{layer}'")
                 self.add_layer(layer)
 
@@ -22,12 +22,12 @@ class Model:
         Adds a layer at the end of the model
         """
         if len(self.layers) > 0:
-            self.layers[-1]._last_layer = False
+            self.layers[-1].set_is_last_layer(False)
             for n in self.layers[-1].nodes:
                 for _ in layer.nodes:
                     n.weights.append(_random.random())
         
-        layer._last_layer = True
+        layer.set_is_last_layer(True)
         self.layers.append(layer)
 
 
@@ -66,7 +66,7 @@ LAYERS:
 
 
     def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
-        res = []
+        res: list[list[float]] = []
         values = list(values)
         pred = 0
         for i, layer in enumerate(self.layers):
@@ -76,7 +76,7 @@ LAYERS:
 
             for val in values:
                 layer_output = layer.calc(val, self.layers[i + 1].nodes) if i < len(self.layers) - 1 else layer.calc(val, None)
-                res.append(layer_output)
+                res.append(list(layer_output))
 
             values.clear()
             for i in range(len(res[0])):

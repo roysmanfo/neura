@@ -16,7 +16,7 @@ class Dense(Layer):
         return sum([node.calc(x, conn_n) for node in self.nodes]) + self.bias
 
     def calc(self, x: float, next_nodes: Optional[list[Node]]) -> Iterable[float]:
-        v = []
+        v: list[float] = []
         if not self._last_layer and next_nodes:
             for i, _ in enumerate(next_nodes):
                 v.append(self._analize(x, i))
