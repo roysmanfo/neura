@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
-import math
+from abc import ABC as _ABC, abstractmethod as _abstractmethod
+import math as _math
 
-
-class ActivationFunction(ABC):
+class ActivationFunction(_ABC):
     def __init__(self, name: str) -> None:
         self.name = name
 
-    @abstractmethod
+    @_abstractmethod
     def apply_formula(self, value: float) -> float:
         """
         Apply the formula of the activation function
@@ -31,7 +30,7 @@ class Sigmoid(ActivationFunction):
         super().__init__("sigmoid")
 
     def apply_formula(self, value: float) -> float:
-        return 1 / (1 + math.exp(-value))
+        return 1 / (1 + _math.exp(-value))
     
 class ReLu(ActivationFunction):
     """
@@ -61,7 +60,7 @@ class Tanh(ActivationFunction):
         super().__init__("tanh")
 
     def apply_formula(self, value: float) -> float:
-        return math.tanh(value)
+        return _math.tanh(value)
 
 class Derivative(ActivationFunction):
     """
