@@ -6,7 +6,7 @@ import nnfs.activation as _activation
 class BaseNode(_ABC):
     def __init__(self, activation: Optional[_activation.ActivationFunction] = None) -> None:
         self.weights: list[float] = []
-        self.w = _random.random()
+        self.w = _random.uniform(-1, 1)
         self.activation: _activation.ActivationFunction
         
         if isinstance(activation, _activation.ActivationFunction):
