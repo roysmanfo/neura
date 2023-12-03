@@ -8,9 +8,9 @@ from nnfs.layers import Layer
 class Model:
     def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .5) -> None:
         self.layers: list[Layer] = []
-        self.learning_rate = learning_rate        
+        self.learning_rate = learning_rate
         self.name = str(name) or "Model"
-        
+
         if layers:
             for layer in layers:
                 if not layer:
@@ -25,15 +25,16 @@ class Model:
             self.layers[-1].set_is_last_layer(False)
             for n in self.layers[-1].nodes:
                 for _ in layer.nodes:
-                    n.weights.append(_random.random())
-        
+                    n.weights.append(_random.uniform(-1, 1))
+
         layer.set_is_last_layer(True)
         self.layers.append(layer)
 
-
-    def summary(self) -> str:
+    def summary(self, verbose: bool = True) -> str:
         """
         Returns a summary of the model architecture
+
+        `:param` verbose when set to False does not print anything
         """
         params = 0
 
@@ -43,7 +44,7 @@ class Model:
             layer_info += f"Layer {i}"
             p = 0
             for node in layer.nodes:
-                params += len(node.weights)                    
+                params += len(node.weights)
                 p += len(node.weights)
 
                 if node == layer.nodes[-1]:
@@ -51,8 +52,8 @@ class Model:
                     p += len(layer.nodes)
             layer_info += f"\t\tnodes: {len(layer.nodes)}"
             layer_info += f"\tparams: {p}\n"
-        
-        return f"""
+
+        summary = f"""
 {self.name}
 ===============================================
 Total number of parameters: {params}
@@ -63,7 +64,9 @@ LAYERS:
 {layer_info}
 ===============================================
 """
-
+        if verbose:
+            print(summary)
+        return summary
 
     def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
         res: list[list[float]] = []
@@ -71,7 +74,7 @@ LAYERS:
         pred = 0
         for i, layer in enumerate(self.layers):
             if verbose:
-                print(f"predicting (layer: {i} / {len(self.layers)})", end="\r")
+                print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
                 pred = i
 
             for val in values:
@@ -81,10 +84,10 @@ LAYERS:
             values.clear()
             for i in range(len(res[0])):
                 values.append(_mean([f[i] for f in res]))
-            
+
             res.clear()
 
         if verbose:
-            print(f"predicting (layer: {pred} / {len(self.layers)})")
-       
+            print(f"predicting (layer: {pred + 1} / {len(self.layers)})")
+
         return values
