@@ -9,6 +9,8 @@ from nnfs.nodes import Node
 class Layer(_ABC):
     def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[Union[str, _activation.ActivationFunction]] = None) -> None:
         self._last_layer = False
+        self.all_input_at_once = False
+
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
         
@@ -36,7 +38,7 @@ class Layer(_ABC):
 
     
     def __str__(self) -> str:
-        return f"Layer(nodes={len(self.nodes)}, bias={self.bias})"
+        return type(__class__).__name__ + f"(nodes={len(self.nodes)}, bias={self.bias})"
     
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Layer):
@@ -49,7 +51,7 @@ class Layer(_ABC):
     def set_is_last_layer(self, val: bool) -> None:
         self._last_layer = val
 
-    @_abstractmethod
+    
     def _analize(self, x: float, conn_n: Optional[int] = None) -> float:
         """
         Evaluate the values to pass to given next node
@@ -59,7 +61,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: float, next_nodes: Optional[list[Node]]) -> Iterable[float]:
+    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]]) -> Iterable[float]:
         """
         Evaluate the values to pass to the next layer/output
         """

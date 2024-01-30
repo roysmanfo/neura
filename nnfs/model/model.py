@@ -1,5 +1,5 @@
 import random as _random
-from typing import Iterable, Optional
+from typing import Any, Iterable, Optional
 from numpy import mean as _mean
 
 from nnfs.layers import Layer
@@ -41,7 +41,7 @@ class Model:
         layer_info = ""
 
         for i, layer in enumerate(self.layers):
-            layer_info += f"Layer {i}"
+            layer_info += f"{i}. {type(layer).__name__}"
             p = 0
             for node in layer.nodes:
                 params += len(node.weights)
@@ -68,7 +68,7 @@ LAYERS:
             print(summary)
         return summary
 
-    def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
+    def predict(self, values: Iterable[Any], verbose: Optional[bool] = True) -> list[float]:
         res: list[list[float]] = []
         values = list(values)
         pred = 0
@@ -76,10 +76,13 @@ LAYERS:
             if verbose:
                 print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
                 pred = i
+            if layer.all_input_at_once:
+                res.append(list(layer.calc(values, None)))
 
-            for val in values:
-                layer_output = layer.calc(val, self.layers[i + 1].nodes) if i < len(self.layers) - 1 else layer.calc(val, None)
-                res.append(list(layer_output))
+            else:
+                for val in values:
+                    layer_output = layer.calc(val, self.layers[i + 1].nodes) if i < len(self.layers) - 1 else layer.calc(val, None)
+                    res.append(list(layer_output))
 
             values.clear()
             for i in range(len(res[0])):
