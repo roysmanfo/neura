@@ -24,7 +24,7 @@ class Basic(ActivationFunction):
     
 class Sigmoid(ActivationFunction):
     """
-    ## f(x) = 1 / (1 + e^(-value))
+    ## f(x) = 1 / (1 + e^(-x))
     """
     def __init__(self) -> None:
         super().__init__("sigmoid")
