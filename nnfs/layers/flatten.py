@@ -8,29 +8,19 @@ class Flatten(Layer):
         super().__init__(1, 0, None)
         self.all_input_at_once = True
 
-    def calc(self, x: Union[float, Iterable[float]], next_nodes: list[Node] | None) -> Iterable[float]:
+    def calc(self, x: Union[float, Iterable[float]], next_nodes: list[Node] | None) -> Iterable[float]:        
         def unpack(paked: Any) -> list[float]:
             vals: list[float] = []
-            try:
-                iter(paked)
-                vals.extend(unpack(paked[0]))
-            except:
-                vals.append(paked)
-            
+            for item in paked:
+                if isinstance(item, list):
+                    vals.extend(unpack(item))
+                else:
+                    vals.append(item)
             return vals
-
-        v: list[float] = []
         
         if isinstance(x, (int, float, complex)):
             raise ValueError("expected Iterable, received:", type(x).__name__)
 
-        x = list(x)
-
-        for i in x:
-            v.extend(unpack(i))
-        print(v)
-
-        # [[10.3, 43], [23, 354]]
-        return v
+        return unpack(x)
 
 
