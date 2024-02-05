@@ -15,7 +15,7 @@ class BaseNode(_ABC):
             self.activation = _activation.Basic()
 
     def __str__(self) -> str:
-        return f"BaseNode(activation='{self.activation.name}', weigths={self.weights})"
+        return f"{type(__class__).__name__}(activation='{self.activation.name}', weigths={self.weights})"
 
     def activate(self, res: float) -> float:
         return self.activation.apply_formula(res)
@@ -30,8 +30,6 @@ class BaseNode(_ABC):
     
 
 class Node(BaseNode):
-    def __str__(self) -> str:
-        return f"Node(activation='{self.activation.name}', weigths={self.weights})"
 
     def calc(self, x: float, conn_n: Optional[int] = None) -> float:
         if not conn_n:
