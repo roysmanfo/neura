@@ -4,6 +4,6 @@ __all__ = [
     "Flatten"
 ]
 
-from .layers import Layer
+from .base import Layer
 from .dense import Dense
 from .flatten import Flatten

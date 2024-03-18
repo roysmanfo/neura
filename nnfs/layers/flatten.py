@@ -1,5 +1,5 @@
 from typing import Any, Iterable, Union
-from .layers import Layer
+from nnfs.layers import Layer
 from nnfs.nodes import Node
 
 
