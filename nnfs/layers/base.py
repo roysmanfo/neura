@@ -7,6 +7,10 @@ from nnfs.nodes import Node
 
 
 class Layer(_ABC):
+    """
+    Abstract Base Class for all layers
+    """
+
     def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[Union[str, _activation.ActivationFunction]] = None) -> None:
         self._last_layer = False
         self.all_input_at_once = False
