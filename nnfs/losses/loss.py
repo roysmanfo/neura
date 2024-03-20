@@ -11,6 +11,6 @@ class Loss(ABC):
         pass
     
     @abstractmethod
-    def call(self, expected_values: List[float], predicted_values: List[float]) -> float:
+    def call(self, y_true: List[float], y_pred: List[float]) -> float:
         ...
     
