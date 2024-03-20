@@ -3,6 +3,7 @@ from abc import ABC as _ABC, abstractmethod as _abstractmethod
 
 import nnfs.activation as _activation
 from nnfs.nodes import Node
+from nnfs.losses.loss import Loss as _Loss
 
 
 
@@ -14,6 +15,7 @@ class Layer(_ABC):
     def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[Union[str, _activation.ActivationFunction]] = None) -> None:
         self._last_layer = False
         self.all_input_at_once = False
+        self.loss = None
 
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
@@ -71,3 +73,11 @@ class Layer(_ABC):
         """
         ...
 
+    def add_loss(self, func: _Loss) -> None:        
+        """
+        Add a loss function to the current layer 
+        """
+        if not issubclass(type(func), _Loss):
+            raise ValueError("unsupported loss function of type: %s " % type(func))
+        
+        self.loss = func
