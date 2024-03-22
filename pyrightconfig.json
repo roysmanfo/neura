@@ -1,3 +1,5 @@
 {
     "reportUnnecessaryIsInstance": false,
+    "reportPrivateUsage": false,
+    "reportUnusedImport": false,
 }
