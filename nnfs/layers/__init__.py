@@ -1,8 +1,6 @@
-__all__ = [
-    "Layer",
-    "Dense",
-    "Flatten"
-]
+"""
+Available model layers
+"""
 
 from .base import Layer
 from .dense import Dense
