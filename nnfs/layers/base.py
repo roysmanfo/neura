@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, Union
+from typing import Iterable, List, Optional, Union
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 
 import nnfs.activation as _activation
@@ -30,15 +30,15 @@ class Layer(_ABC):
                 case "leakyrelu": self.activation = _activation.LeakyReLu()
                 case "derivative": self.activation = _activation.Derivative()
                 case "tanh": self.activation = _activation.Tanh()
-                case "basic": self.activation = _activation.Basic()
+                case "linear": self.activation = _activation.Linear()
                 case _: raise ValueError(f"Invaid type for activation: '{activation}'")
         
         elif not activation:
-            self.activation = _activation.Basic()
+            self.activation = _activation.Linear()
             
         else:
             raise ValueError(f"Invaid type activation: {type(activation)} is not (str, ActivationFunction, None)")
-        
+
         self.nodes: list[Node] = [Node(self.activation) for _ in range(units)]
         self.bias = bias if bias else 0
 
@@ -67,7 +67,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]]) -> Iterable[float]:
+    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]]) -> List[float]:
         """
         Evaluate the values to pass to the next layer/output
         """
