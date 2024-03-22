@@ -1,12 +1,12 @@
 """
 Available activation functions
 """
-from nnfs.activation import ActivationFunction
-from nnfs.activation import Linear
-from nnfs.activation import Derivative
-from nnfs.activation import Exponential
-from nnfs.activation import LeakyReLu
-from nnfs.activation import ReLu
-from nnfs.activation import Sigmoid
-from nnfs.activation import Tanh
-from nnfs.activation import Swish
+from .activation import ActivationFunction
+from .activation import Linear
+from .activation import Derivative
+from .activation import Exponential
+from .activation import LeakyReLu
+from .activation import ReLu
+from .activation import Sigmoid
+from .activation import Tanh
+from .activation import Swish
