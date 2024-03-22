@@ -1,19 +1,12 @@
-from .activation import (
-    ActivationFunction,
-    Basic,
-    Derivative,
-    LeakyReLu,
-    ReLu,
-    Sigmoid,
-    Tanh
-)
-
-__all__ =  [
-    "ActivationFunction",
-    "Basic",
-    "Derivative",
-    "LeakyReLu",
-    "ReLu",
-    "Sigmoid",
-    "Tanh"
-]
+"""
+Available activation functions
+"""
+from nnfs.activation import ActivationFunction
+from nnfs.activation import Linear
+from nnfs.activation import Derivative
+from nnfs.activation import Exponential
+from nnfs.activation import LeakyReLu
+from nnfs.activation import ReLu
+from nnfs.activation import Sigmoid
+from nnfs.activation import Tanh
+from nnfs.activation import Swish

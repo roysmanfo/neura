@@ -12,12 +12,12 @@ class ActivationFunction(_ABC):
         """
         ...
 
-class Basic(ActivationFunction):
+class Linear(ActivationFunction):
     """
     ## f(x) = x
     """
     def __init__(self) -> None:
-        super().__init__("basic")
+        super().__init__("linear")
 
     def apply_formula(self, value: float) -> float:
         return value
@@ -32,6 +32,16 @@ class Sigmoid(ActivationFunction):
     def apply_formula(self, value: float) -> float:
         return 1 / (1 + _math.exp(-value))
     
+class Exponential(ActivationFunction):
+    """
+    ## f(x) = e^(x)
+    """
+    def __init__(self) -> None:
+        super().__init__("exponential")
+
+    def apply_formula(self, value: float) -> float:
+        return _math.exp(value)
+
 class ReLu(ActivationFunction):
     """
     ## f(x) = max(0, x)
@@ -72,4 +82,14 @@ class Derivative(ActivationFunction):
     def apply_formula(self, value: float) -> float:
         return 1 if value > 0 else 0
     
+class Swish(ActivationFunction):
+    """
+    ## f(x) = x * sigmoid(x)
+    """
+    def __init__(self) -> None:
+        super().__init__("swish")
+        self.sigmoid = Sigmoid()
+    
+    def apply_formula(self, value: float) -> float:
+        return value * self.sigmoid.apply_formula(value)
     
