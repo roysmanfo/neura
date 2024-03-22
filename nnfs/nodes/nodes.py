@@ -12,10 +12,10 @@ class BaseNode(_ABC):
         if isinstance(activation, _activation.ActivationFunction):
             self.activation = activation
         else: 
-            self.activation = _activation.Basic()
+            self.activation = _activation.Linear()
 
     def __str__(self) -> str:
-        return f"{type(__class__).__name__}(activation='{self.activation.name}', weigths={self.weights})"
+        return f"{type(self).__name__}(activation='{self.activation.name}', weigths={self.weights}, w={self.w})"
 
     def activate(self, res: float) -> float:
         return self.activation.apply_formula(res)

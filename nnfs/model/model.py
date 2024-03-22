@@ -79,13 +79,14 @@ LAYERS:
     def predict(self, values: Iterable[Any], verbose: Optional[bool] = True) -> list[float]:
         res: list[list[float]] = []
         values = list(values)
+
         pred = 0
         for i, layer in enumerate(self.layers):
             if verbose:
                 print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
                 pred = i
             if layer.all_input_at_once:
-                res.append(list(layer.calc(values, None)))
+                res.append(layer.calc(values, None))
 
             else:
                 for val in values:
@@ -93,9 +94,8 @@ LAYERS:
                     res.append(list(layer_output))
 
             values.clear()
-            for i in range(len(res[0])):
-                values.append(_mean([f[i] for f in res]))
-
+            for j in range(len(res[0])):
+                values.append(_mean([f[j] for f in res]))
             res.clear()
 
         if verbose:
