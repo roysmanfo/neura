@@ -17,7 +17,8 @@ class Dense(Layer):
         res = sum([node.calc(x, conn_n) for node in self.nodes]) + self.bias
 
         return res
-    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]]) -> List[float]:
+    
+    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]] = None) -> List[float]:
         v: list[float] = []
 
         if not isinstance(x, (int, float, complex)):
