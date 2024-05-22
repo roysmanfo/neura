@@ -1,7 +1,8 @@
-__all__ = [
-    "MeanAbsoluteError",
-    "MeanSquaredError",
-]
+"""
+Available loss functions
+"""
 
-from .mean import MeanAbsoluteError
-from .mean import MeanSquaredError
+from .loss import MeanAbsoluteError
+from .loss import MeanSquaredError
+from .loss import BinaryCrossEntropy
+from .loss import CategoricalCrossEntropy
