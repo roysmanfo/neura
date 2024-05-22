@@ -28,7 +28,7 @@ class Layer(_ABC):
                 case "sigmoid": self.activation = _activation.Sigmoid()
                 case "relu": self.activation = _activation.ReLu()
                 case "leakyrelu": self.activation = _activation.LeakyReLu()
-                case "derivative": self.activation = _activation.Derivative()
+                case "prelu": self.activation = _activation.PReLU()
                 case "tanh": self.activation = _activation.Tanh()
                 case "linear": self.activation = _activation.Linear()
                 case _: raise ValueError(f"Invaid type for activation: '{activation}'")
