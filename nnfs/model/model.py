@@ -1,12 +1,20 @@
 import random as _random
-from typing import Any, Iterable, Optional
-from numpy import mean as _mean
+from typing import Iterable, Optional
 
-from nnfs.layers import Layer
-
+from nnfs.layers import Layer, Input
 
 class Model:
-    def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
+    def __init__(self, layers: Optional[list[Layer]] = None, input_shape: Optional[tuple[int, ...]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
+        """
+        parameters:
+        
+        layers:         a list of layers to initialize the model. you can add more layers
+                        by calling `add_layer()`
+        input_shape:    a tuple with the shape of the input for the neural network.
+                        if None, 1 is assumed
+        name:           the name of the model
+                    
+        """
         
         if not isinstance(name, str) and not name is None:
             raise ValueError("name must be of type str or None")
@@ -18,6 +26,10 @@ class Model:
         self.learning_rate = learning_rate        
         self.name = "Model" if name is None else str(name) or "Model"
 
+        if input_shape and not all(isinstance(i, int) for i in input_shape):
+            raise ValueError("input_shape can only contain int values")
+
+        self.input_size = Input(input_shape) if input_shape else 1
 
         if layers:
             for layer in layers:
@@ -30,12 +42,13 @@ class Model:
         Adds a layer at the end of the model
         """
         if len(self.layers) > 0:
-            self.layers[-1].set_is_last_layer(False)
-            for n in self.layers[-1].nodes:
-                for _ in layer.nodes:
-                    n.weights.append(_random.uniform(-1, 1))
+            previous_layer_node_count = len(self.layers[-1].nodes)
+            for n in layer.nodes:
+                n.weights = [_random.uniform(-1, 1) for _ in range(previous_layer_node_count)]
+        else:
+            for n in layer.nodes:
+                n.weights = [_random.uniform(-1, 1) for _ in range(self.input_size)]
 
-        layer.set_is_last_layer(True)
         self.layers.append(layer)
 
     def summary(self, verbose: bool = True) -> str:
@@ -52,12 +65,9 @@ class Model:
             layer_info += f"{i}. {type(layer).__name__}"
             p = 0
             for node in layer.nodes:
-                params += len(node.weights)
                 p += len(node.weights)
+                params += len(node.weights)
 
-                if node == layer.nodes[-1]:
-                    params += len(layer.nodes)
-                    p += len(layer.nodes)
             layer_info += f"\t\tnodes: {len(layer.nodes)}"
             layer_info += f"\tparams: {p}\n"
 
@@ -76,29 +86,12 @@ LAYERS:
             print(summary)
         return summary
 
-    def predict(self, values: Iterable[Any], verbose: Optional[bool] = True) -> list[float]:
-        res: list[list[float]] = []
+    def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
         values = list(values)
-
-        pred = 0
         for i, layer in enumerate(self.layers):
             if verbose:
                 print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
-                pred = i
-            if layer.all_input_at_once:
-                res.append(layer.calc(values, None))
-
-            else:
-                for val in values:
-                    layer_output = layer.calc(val, self.layers[i + 1].nodes) if i < len(self.layers) - 1 else layer.calc(val, None)
-                    res.append(list(layer_output))
-
-            values.clear()
-            for j in range(len(res[0])):
-                values.append(_mean([f[j] for f in res]))
-            res.clear()
-
+            values = layer.calc(values)
         if verbose:
-            print(f"predicting (layer: {pred + 1} / {len(self.layers)})")
-
+            print(f"predicting (layer: {len(self.layers)} / {len(self.layers)})")
         return values

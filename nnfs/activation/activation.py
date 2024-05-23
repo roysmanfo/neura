@@ -3,20 +3,20 @@ import math as _math
 import random as _random
 
 class ActivationFunction(_ABC):
-    def __init__(self, name: str) -> None:
-        self.name = name
+    def __init__(self) -> None:
+        self.name = self.__class__.__name__
 
     @_abstractmethod
-    def apply_formula(self, value: float) -> float:
+    def apply_formula(self, x: float) -> float:
         """
         Apply the formula of the activation function
         """
         ...
     
     @_abstractmethod
-    def derivative(self, value: float) -> float:
+    def derivative(self, x: float) -> float:
         """
-        Apply the formula of the activation function
+        Calculate the derivative in x
         """
         ...
 
@@ -24,110 +24,97 @@ class Linear(ActivationFunction):
     """
     ## f(x) = x
     """
-    def __init__(self) -> None:
-        super().__init__("linear")
 
-    def apply_formula(self, value: float) -> float:
-        return value
+    def apply_formula(self, x: float) -> float:
+        return x
     
-    def derivative(self, value: float) -> float:
+    def derivative(self, x: float) -> float:
         return 1
         
 class Sigmoid(ActivationFunction):
     """
     ## f(x) = 1 / (1 + e^(-x))
     """
-    def __init__(self) -> None:
-        super().__init__("sigmoid")
 
-    def apply_formula(self, value: float) -> float:
-        return 1 / (1 + _math.exp(-value))
+    def apply_formula(self, x: float) -> float:
+        return 1 / (1 + _math.exp(-x))
 
-    def derivative(self, value: float) -> float:
-        return _math.exp(value) / ((1 + _math.exp(value)) ** 2)
+    def derivative(self, x: float) -> float:
+        return _math.exp(x) / ((1 + _math.exp(x)) ** 2)
     
 class Exponential(ActivationFunction):
     """
     ## f(x) = e^(x)
     """
-    def __init__(self) -> None:
-        super().__init__("exponential")
 
-    def apply_formula(self, value: float) -> float:
-        return _math.exp(value)
+    def apply_formula(self, x: float) -> float:
+        return _math.exp(x)
     
-    def derivative(self, value: float) -> float:
-        return _math.exp(value)
+    def derivative(self, x: float) -> float:
+        return _math.exp(x)
 
 class ReLu(ActivationFunction):
     """
     ## f(x) = max(0, x)
     """
-    def __init__(self) -> None:
-        super().__init__("relu")
 
-    def apply_formula(self, value: float) -> float:
-        return max(0, value)
+    def apply_formula(self, x: float) -> float:
+        return max(0, x)
 
-    def derivative(self, value: float) -> float:
-        return 0 if value <= 0 else 1
+    def derivative(self, x: float) -> float:
+        return 0 if x <= 0 else 1
     
 class LeakyReLu(ActivationFunction):
     """
     ## f(x) = max(x, 0.1x)
     """
-    def __init__(self) -> None:
-        super().__init__("leakyrelu")
 
-    def apply_formula(self, value: float) -> float:
-        return max(value, .1 * value)
+    def apply_formula(self, x: float) -> float:
+        return max(x, .1 * x)
 
-    def derivative(self, value: float) -> float:
-        return 1 if value >= 0 else .1
+    def derivative(self, x: float) -> float:
+        return 1 if x >= 0 else .1
 
 class Tanh(ActivationFunction):
     """
     ## f(x) = tanh(x)
     """
-    def __init__(self) -> None:
-        super().__init__("tanh")
 
-    def apply_formula(self, value: float) -> float:
-        return _math.tanh(value)
+    def apply_formula(self, x: float) -> float:
+        return _math.tanh(x)
 
-    def derivative(self, value: float) -> float:
-        return _math.cosh(value) ** -2 
+    def derivative(self, x: float) -> float:
+        return _math.cosh(x) ** -2 
     
 class Swish(ActivationFunction):
     """
     ## f(x) = x * sigmoid(x)
     """
     def __init__(self) -> None:
-        super().__init__("swish")
+        super().__init__()
         self.sigmoid = Sigmoid()
     
-    def apply_formula(self, value: float) -> float:
-        return value * self.sigmoid.apply_formula(value)
+    def apply_formula(self, x: float) -> float:
+        return x * self.sigmoid.apply_formula(x)
 
-    def derivative(self, value: float) -> float:
-        return self.sigmoid.apply_formula(value) + value * self.sigmoid.derivative(value)
+    def derivative(self, x: float) -> float:
+        return self.sigmoid.apply_formula(x) + x * self.sigmoid.derivative(x)
     
 class PReLU (ActivationFunction):
     """
     ## f(x) = ax if x < 0 else x
     """
-    
     def __init__(self) -> None:
-        super().__init__("prelu")
+        super().__init__()
         self.a = _random.gauss()
     
-    def apply_formula(self, value: float) -> float:
-        if value < 0:
-            return self.a * value
-        return value
+    def apply_formula(self, x: float) -> float:
+        if x < 0:
+            return self.a * x
+        return x
 
-    def derivative(self, value: float) -> float:
-        if value < 0:
+    def derivative(self, x: float) -> float:
+        if x < 0:
             return self.a
         return 1    
 

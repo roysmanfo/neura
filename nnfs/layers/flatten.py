@@ -1,6 +1,5 @@
 from typing import Any, Iterable, List, Union
 from nnfs.layers import Layer
-from nnfs.nodes import Node
 
 
 class Flatten(Layer):
@@ -8,7 +7,7 @@ class Flatten(Layer):
         super().__init__(1, 0, None)
         self.all_input_at_once = True
 
-    def calc(self, x: Union[float, Iterable[float]], next_nodes: list[Node] | None) -> List[float]:
+    def calc(self, x: Union[float, Iterable[float]]) -> List[float]:
         if isinstance(x, (int, float, complex)):
             raise ValueError("expected Iterable, received:", type(x).__name__)
 

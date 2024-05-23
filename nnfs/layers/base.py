@@ -1,6 +1,5 @@
 from typing import Iterable, List, Optional, Union
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
-
 import nnfs.activation as _activation
 from nnfs.nodes import Node
 from nnfs.losses.loss import Loss as _Loss
@@ -51,6 +50,7 @@ class Layer(_ABC):
             return False
         return len(self.nodes) == len(__value.nodes) and all([node == __value.nodes[index] for index, node in enumerate(self.nodes)]) and self.bias == __value.bias
 
+    @property
     def is_last_layer(self) -> bool:
         return self._last_layer
 
@@ -58,7 +58,7 @@ class Layer(_ABC):
         self._last_layer = val
 
     
-    def _analize(self, x: float, conn_n: Optional[int] = None) -> float:
+    def _analize(self, x: List[float], node: Node) -> float:
         """
         Evaluate the values to pass to given next node
 
@@ -67,7 +67,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: Union[float, Iterable[float]], next_nodes: Optional[list[Node]]) -> List[float]:
+    def calc(self, x: List[float]) -> List[float]:
         """
         Evaluate the values to pass to the next layer/output
         """
