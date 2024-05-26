@@ -3,6 +3,10 @@ from typing import List
 from typing import Any, List
 
 class Activation(_ABC):
+    """
+    Base class for all activation functions
+    """
+    
     def __init__(self) -> None:
         self.name = self.__class__.__name__
 
