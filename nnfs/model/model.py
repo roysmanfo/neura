@@ -1,18 +1,18 @@
 import random as _random
-from typing import Iterable, Optional
+from typing import Any, Iterable, Optional, Union
 
 from nnfs.layers import Layer, Input
+from nnfs.losses import Loss
+from nnfs.utils.types import InputValue
 
 class Model:
-    def __init__(self, layers: Optional[list[Layer]] = None, input_shape: Optional[tuple[int, ...]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
+    def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
         """
         parameters:
         
-        layers:         a list of layers to initialize the model. you can add more layers
-                        by calling `add_layer()`
-        input_shape:    a tuple with the shape of the input for the neural network.
-                        if None, 1 is assumed
-        name:           the name of the model
+        - layers:         a list of layers to initialize the model. you can add more layers
+                          by calling `add_layer()`
+        - name:           the name of the model
                     
         """
         
@@ -22,20 +22,35 @@ class Model:
         if learning_rate <= 0:
             raise ValueError("learning_rate must be > 0")
         
+        self.loss = None
+        self.optimizer = None
+        self.metrics = []
+
         self.layers: list[Layer] = []
         self.learning_rate = learning_rate        
         self.name = "Model" if name is None else str(name) or "Model"
 
-        if input_shape and not all(isinstance(i, int) for i in input_shape):
-            raise ValueError("input_shape can only contain int values")
-
-        self.input_size = Input(input_shape) if input_shape else 1
-
         if layers:
-            for layer in layers:
-                if not layer:
-                    raise ValueError(f"invalid layer supplied: '{layer}'")
-                self.add_layer(layer)
+            input_shape = layers[0].input_shape
+
+            if input_shape is None:
+                raise ValueError("no input_shape provided for the first layer")
+       
+            if input_shape and not all(isinstance(i, int) for i in input_shape):
+                raise ValueError("input_shape can only contain int values")
+
+            self.input_size = Input(input_shape) if input_shape else 1
+
+            if layers:
+                for layer in layers:
+                    if not layer:
+                        raise ValueError(f"invalid layer supplied: '{layer}'")
+                    self.add_layer(layer)
+        else:
+            input_shape = None
+            self.input_size = None
+
+
 
     def add_layer(self, layer: Layer):
         """
@@ -54,12 +69,29 @@ class Model:
                 previous_layer_node_count = len(self.layers[-1].nodes)
 
             for n in layer.nodes:
-                n.weights = [_random.uniform(-1, 1) for _ in range(previous_layer_node_count)]
+                n.weights = [_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)]
         else:
+
+            if not layer.input_shape:
+                raise ValueError("no input_shape provided for the first layer")
+            
+            if layer.input_shape and not all(isinstance(i, int) for i in layer.input_shape):
+                raise ValueError("input_shape can only contain int values")
+
+            self.input_size = Input(layer.input_shape)
             for n in layer.nodes:
                 n.weights = [_random.uniform(-1, 1) for _ in range(self.input_size)]
 
         self.layers.append(layer)
+
+    def compile(self, loss: Union[Loss, str], optimizer: Optional[str] = "adam", metrics: Optional[list[Any]] = None):
+        if not isinstance(loss, Loss):
+            raise ValueError("")
+        
+        self.optimizer = optimizer
+        self.loss = loss
+        self.metrics = metrics
+
 
     def summary(self, verbose: bool = True) -> str:
         """
@@ -96,7 +128,7 @@ LAYERS:
             print(summary)
         return summary
 
-    def predict(self, values: Iterable[float], verbose: Optional[bool] = True) -> list[float]:
+    def predict(self, values: Iterable[InputValue], verbose: Optional[bool] = True) -> list[float]:
         values = list(values)
         for i, layer in enumerate(self.layers):
             if verbose:
@@ -104,4 +136,5 @@ LAYERS:
             values = layer.calc(values)
         if verbose:
             print(f"predicting (layer: {len(self.layers)} / {len(self.layers)})")
-        return values
+        
+        return values # type: ignore

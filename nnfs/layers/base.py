@@ -1,17 +1,37 @@
-from typing import Iterable, List, Optional, Union
+from typing import List, Optional, Union
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
+import random as _random
+import math as _math
+
 import nnfs.activation as _activation
 from nnfs.nodes import Node
 from nnfs.losses.loss import Loss as _Loss
+from nnfs.utils.types import InputValue
 
+Activation = Union[str, _activation.ActivationFunction]
 
 
 class Layer(_ABC):
     """
     Abstract Base Class for all layers
+
+    parameters:
+
+    - units:          the number of perceptrons for the current layer
+    - bias:           if true, a bias will be added to the output 
+    - activation:     the function used to fire each perceptron of the layer
+    - input_shape:    a tuple with the shape of the input for the neural network.
+                      if None, then 1 is assumed
     """
 
-    def __init__(self, units: int, bias: Optional[int] = None, activation: Optional[Union[str, _activation.ActivationFunction]] = None) -> None:
+    def __init__(self,
+                 units: int,
+                 bias: Optional[bool] = None,
+                 activation: Optional[Activation] = None,
+                 input_shape: Optional[tuple[int, ...]] = None
+
+                 ) -> None:
+        
         self._last_layer = False
         self.all_input_at_once = False
         self.loss = None
@@ -37,9 +57,18 @@ class Layer(_ABC):
             
         else:
             raise ValueError(f"Invaid type activation: {type(activation)} is not (str, ActivationFunction, None)")
-
+        
         self.nodes: list[Node] = [Node(self.activation) for _ in range(units)]
-        self.bias = bias if bias else 0
+        self.bias = _random.gauss(mu=0, sigma=1) if bias else 0
+
+        if input_shape:
+            if not isinstance(input_shape, tuple):
+                raise ValueError("input_shape must be a tuple of int", type(input_shape))
+            
+            if not all(i > 0 for i in input_shape):
+                raise ValueError("input_shape numbers must be > 0")
+
+        self.input_shape = input_shape
 
     
     def __str__(self) -> str:
@@ -67,7 +96,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: List[float]) -> List[float]:
+    def calc(self, x: InputValue) -> List[float]:
         """
         Evaluate the values to pass to the next layer/output
         """
