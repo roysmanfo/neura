@@ -1,6 +1,7 @@
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 import math as _math
 import random as _random
+from typing import Optional
 
 class ActivationFunction(_ABC):
     def __init__(self) -> None:
@@ -19,6 +20,15 @@ class ActivationFunction(_ABC):
         Calculate the derivative in x
         """
         ...
+
+class ParametricFunction(ActivationFunction):
+    """
+    An activation function that also takes parameters
+    """
+
+    def __init__(self, *args: list[str], **kwargs: dict[str, str]) -> None:
+        super().__init__()
+        self.params = []
 
 class Linear(ActivationFunction):
     """
@@ -100,14 +110,15 @@ class Swish(ActivationFunction):
     def derivative(self, x: float) -> float:
         return self.sigmoid.apply_formula(x) + x * self.sigmoid.derivative(x)
     
-class PReLU (ActivationFunction):
+class PReLU (ParametricFunction):
     """
     ## f(x) = ax if x < 0 else x
     """
-    def __init__(self) -> None:
+    def __init__(self, a: Optional[float] = None) -> None:
         super().__init__()
-        self.a = _random.gauss()
-    
+        self.a: float = a if a else _random.gauss(0, 1)
+        self.params = [self.a]
+
     def apply_formula(self, x: float) -> float:
         if x < 0:
             return self.a * x
