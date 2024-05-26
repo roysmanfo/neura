@@ -2,27 +2,16 @@
 Available activation functions
 """
 
-
-__all__ = (
-    'ActivationFunction',
-    'Exponential',
-    'LeakyReLu',
-    'Linear',
-    'PReLU',
-    'ReLu',
-    'Sigmoid',
-    'Swish',
-    'Tanh'
-)
-
-
-from .activation import ActivationFunction
+from .base_functions import Activation
+from .base_functions import ParametricFunction
+from .base_functions import ScalarFunction
+from .base_functions import VectorialFunction
 from .activation import Exponential
 from .activation import LeakyReLu
 from .activation import Linear
 from .activation import PReLU
 from .activation import ReLu
 from .activation import Sigmoid
+from .activation import Softmax
 from .activation import Swish
 from .activation import Tanh
-

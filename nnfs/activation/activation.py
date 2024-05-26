@@ -1,36 +1,15 @@
-from abc import ABC as _ABC, abstractmethod as _abstractmethod
 import math as _math
 import random as _random
-from typing import Optional
+from typing import List, Optional
 
-class ActivationFunction(_ABC):
-    def __init__(self) -> None:
-        self.name = self.__class__.__name__
+from .base_functions import (
+    ParametricFunction,
+    ScalarFunction,
+    VectorialFunction
+)
 
-    @_abstractmethod
-    def apply_formula(self, x: float) -> float:
-        """
-        Apply the formula of the activation function
-        """
-        ...
-    
-    @_abstractmethod
-    def derivative(self, x: float) -> float:
-        """
-        Calculate the derivative in x
-        """
-        ...
 
-class ParametricFunction(ActivationFunction):
-    """
-    An activation function that also takes parameters
-    """
-
-    def __init__(self, *args: list[str], **kwargs: dict[str, str]) -> None:
-        super().__init__()
-        self.params = []
-
-class Linear(ActivationFunction):
+class Linear(ScalarFunction):
     """
     ## f(x) = x
     """
@@ -41,7 +20,7 @@ class Linear(ActivationFunction):
     def derivative(self, x: float) -> float:
         return 1
         
-class Sigmoid(ActivationFunction):
+class Sigmoid(ScalarFunction):
     """
     ## f(x) = 1 / (1 + e^(-x))
     """
@@ -52,7 +31,7 @@ class Sigmoid(ActivationFunction):
     def derivative(self, x: float) -> float:
         return _math.exp(x) / ((1 + _math.exp(x)) ** 2)
     
-class Exponential(ActivationFunction):
+class Exponential(ScalarFunction):
     """
     ## f(x) = e^(x)
     """
@@ -63,7 +42,7 @@ class Exponential(ActivationFunction):
     def derivative(self, x: float) -> float:
         return _math.exp(x)
 
-class ReLu(ActivationFunction):
+class ReLu(ScalarFunction):
     """
     ## f(x) = max(0, x)
     """
@@ -74,7 +53,7 @@ class ReLu(ActivationFunction):
     def derivative(self, x: float) -> float:
         return 0 if x <= 0 else 1
     
-class LeakyReLu(ActivationFunction):
+class LeakyReLu(ScalarFunction):
     """
     ## f(x) = max(x, 0.1x)
     """
@@ -85,7 +64,7 @@ class LeakyReLu(ActivationFunction):
     def derivative(self, x: float) -> float:
         return 1 if x >= 0 else .1
 
-class Tanh(ActivationFunction):
+class Tanh(ScalarFunction):
     """
     ## f(x) = tanh(x)
     """
@@ -96,7 +75,7 @@ class Tanh(ActivationFunction):
     def derivative(self, x: float) -> float:
         return _math.cosh(x) ** -2 
     
-class Swish(ActivationFunction):
+class Swish(ScalarFunction):
     """
     ## f(x) = x * sigmoid(x)
     """
@@ -117,7 +96,7 @@ class PReLU (ParametricFunction):
     def __init__(self, a: Optional[float] = None) -> None:
         super().__init__()
         self.a: float = a if a else _random.gauss(0, 1)
-        self.params = [self.a]
+        self.params = {"a": self.a}
 
     def apply_formula(self, x: float) -> float:
         if x < 0:
@@ -129,4 +108,16 @@ class PReLU (ParametricFunction):
             return self.a
         return 1    
 
+class Softmax(VectorialFunction):
+    """
+    ## Softmax activation function
+    """
+    def apply_formula(self, x: List[float]) -> List[float]:
+        exp_x = [_math.exp(i) for i in x]
+        sum_exp_x = sum(exp_x)
+        return [j / sum_exp_x for j in exp_x]
+
+    def derivative(self, x: List[float]) -> List[float]:
+        # Derivative of softmax is a bit more complex, typically used in cross-entropy loss
+        raise NotImplementedError("Softmax derivative is usually combined with cross-entropy loss")
     

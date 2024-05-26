@@ -3,7 +3,7 @@ from typing import List
 import nnfs.activation as _activation
 
 class BaseNode(_ABC):
-    def __init__(self, activation: _activation.ActivationFunction) -> None:
+    def __init__(self, activation: _activation.ScalarFunction) -> None:
         self.weights: list[float] = []
         self.activation = activation
         

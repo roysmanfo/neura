@@ -8,7 +8,7 @@ from nnfs.nodes import Node
 from nnfs.losses.loss import Loss as _Loss
 from nnfs.utils.types import InputValue
 
-Activation = Union[str, _activation.ActivationFunction]
+Activation = Union[str, _activation.Activation]
 
 
 class Layer(_ABC):
@@ -39,26 +39,30 @@ class Layer(_ABC):
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
         
-        if isinstance(activation, _activation.ActivationFunction):
+        if isinstance(activation, _activation.Activation):
             self.activation = activation
         
         elif isinstance(activation, str):
+            #! temporary
             match activation:
-                case "sigmoid": self.activation = _activation.Sigmoid()
-                case "relu": self.activation = _activation.ReLu()
+                case "exponential": self.activation = _activation.LeakyReLu()
                 case "leakyrelu": self.activation = _activation.LeakyReLu()
-                case "prelu": self.activation = _activation.PReLU()
-                case "tanh": self.activation = _activation.Tanh()
                 case "linear": self.activation = _activation.Linear()
+                case "prelu": self.activation = _activation.PReLU()
+                case "relu": self.activation = _activation.ReLu()
+                case "sigmoid": self.activation = _activation.Sigmoid()
+                case "softmax": self.activation = _activation.Softmax()
+                case "swish": self.activation = _activation.Swish()
+                case "tanh": self.activation = _activation.Tanh()
                 case _: raise ValueError(f"Invaid type for activation: '{activation}'")
         
         elif not activation:
             self.activation = _activation.Linear()
             
         else:
-            raise ValueError(f"Invaid type activation: {type(activation)} is not (str, ActivationFunction, None)")
+            raise ValueError(f"Invaid type activation: {type(activation)} is not (str, Activation, None)")
         
-        self.nodes: list[Node] = [Node(self.activation) for _ in range(units)]
+        self.nodes: list[Node] = [Node(self.activation if isinstance(self.activation, _activation.ScalarFunction) else _activation.Linear()) for _ in range(units)]
         self.bias = _random.gauss(mu=0, sigma=1) if bias else 0
 
         if input_shape:
