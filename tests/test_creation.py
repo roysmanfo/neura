@@ -16,7 +16,7 @@ class Test_Creation(unittest.TestCase):
         import nnfs
         
         model = nnfs.model.Model([
-            nnfs.layers.Dense(16, activation=nnfs.activation.LeakyReLu()),
+            nnfs.layers.Dense(16, activation=nnfs.activation.LeakyReLu(), input_shape=(16,)),
             nnfs.layers.Dense(8, activation=nnfs.activation.Sigmoid()),
             nnfs.layers.Dense(4, activation="tanh")
         ], name="Test Neural Network")
@@ -27,7 +27,7 @@ class Test_Creation(unittest.TestCase):
         import nnfs
         
         model = nnfs.model.Model([
-            nnfs.layers.Dense(16),
+            nnfs.layers.Dense(16, input_shape=(16,)),
             nnfs.layers.Dense(8),
             nnfs.layers.Dense(4)
         ])
