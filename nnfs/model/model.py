@@ -151,7 +151,7 @@ LAYERS:
 
         if not self.loss:
             raise RuntimeError("You need to call compile() before evaluating")
-        loss = self.loss.call(y, self.predict(x, verbose=False))
+        loss = self.loss.compute(y, self.predict(x, verbose=False))
         
         e = Evaluation(loss, metrics=None)
 
