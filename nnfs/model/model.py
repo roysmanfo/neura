@@ -1,9 +1,12 @@
+import numpy as np
 import random as _random
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 from nnfs.layers import Layer, Input
 from nnfs.losses import Loss
 from nnfs.utils.types import InputValue, OutputValue
+from nnfs.evaluation import Evaluation
+
 
 class Model:
     def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
@@ -140,3 +143,17 @@ LAYERS:
             print(f"predicting (layer: {len(self.layers)} / {len(self.layers)})")
         
         return values
+    
+    def evaluate(self, x: InputValue, y: InputValue) -> List[Any]:
+        """
+        Evaluate the models performance
+        """
+
+        if not self.loss:
+            raise RuntimeError("You need to call compile() before evaluating")
+        loss = self.loss.call(y, self.predict(x, verbose=False))
+        
+        e = Evaluation(loss, metrics=None)
+
+
+        return [e.loss]

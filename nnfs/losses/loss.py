@@ -1,3 +1,4 @@
+import numpy as np
 import math as _math
 from abc import ABC, abstractmethod
 
@@ -15,7 +16,7 @@ class Loss(ABC):
         pass
     
     @abstractmethod
-    def call(self, y_true: InputValue, y_pred:InputValue) -> float:
+    def call(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
         ...
 
 
@@ -24,9 +25,9 @@ class MeanAbsoluteError(Loss):
     L(a) = |a|
     """
 
-    def call(self, y_true: InputValue, y_pred:InputValue) -> float:
-        s = sum([a - b for a, b in zip(y_true, y_pred)])
-        return abs(s)
+    def call(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+        return np.mean(np.abs(y_true - y_pred))
+
 
 
 class MeanSquaredError(Loss):
@@ -34,9 +35,8 @@ class MeanSquaredError(Loss):
     L(a) = a^2
     """
 
-    def call(self, y_true: InputValue, y_pred:InputValue) -> float:
-        s = sum([(a - b)**2 for a, b in zip(y_true, y_pred)])
-        return s / len(y_true)
+    def call(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+        return np.mean((y_true - y_pred) ** 2)
     
 class BinaryCrossEntropy(Loss):
     """
@@ -45,9 +45,10 @@ class BinaryCrossEntropy(Loss):
     This is mostly used for categorical models
     """
     
-    def call(self, y_true: InputValue, y_pred:InputValue) -> float:
-        s = sum([( y * _math.log(y_p) + (1 - y) * _math.log( 1 - y_p)) for y, y_p in zip(y_true, y_pred)])
-        return -s / len(y_pred) 
+    def call(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+        # ? avoid calculating log(0)
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)) 
 
 class CategoricalCrossEntropy(Loss):
     """
@@ -56,7 +57,8 @@ class CategoricalCrossEntropy(Loss):
     This is mostly used for categorical models
     """
 
-    def call(self, y_true: InputValue, y_pred: InputValue) -> float:
-        s = sum([( y * _math.log(y_p)) for y, y_p in zip(y_true, y_pred)])
-        return -s / len(y_pred) 
+    def call(self, y_true: InputValue, y_pred: InputValue) -> np.float64:
+        # ? avoid calculating log(0)
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+        return -np.mean(y_true * np.log(y_pred))
     
