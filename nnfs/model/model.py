@@ -1,6 +1,5 @@
-import numpy as np
 import random as _random
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Optional, Union
 
 from nnfs.layers import Layer, Input
 from nnfs.losses import Loss
