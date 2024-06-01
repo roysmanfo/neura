@@ -1,12 +1,12 @@
-from typing import List, Optional, Union
+from typing import Optional, Union
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 import random as _random
-import math as _math
+import numpy as np
 
 import nnfs.activation as _activation
 from nnfs.nodes import Node
 from nnfs.losses.loss import Loss as _Loss
-from nnfs.utils.types import InputValue
+from nnfs.utils.types import InputValue, OutputValue
 
 Activation = Union[str, _activation.Activation]
 
@@ -76,7 +76,7 @@ class Layer(_ABC):
 
     
     def __str__(self) -> str:
-        return type(__class__).__name__ + f"(nodes={len(self.nodes)}, bias={self.bias})"
+        return self.__class__.__name__ + f"(nodes={len(self.nodes)}, bias={self.bias})"
     
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Layer):
@@ -91,7 +91,7 @@ class Layer(_ABC):
         self._last_layer = val
 
     
-    def _analize(self, x: List[float], node: Node) -> float:
+    def _analize(self, x: InputValue, node: Node) -> float:
         """
         Evaluate the values to pass to given next node
 
@@ -100,7 +100,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: InputValue) -> List[float]:
+    def calc(self, x: InputValue) -> OutputValue:
         """
         Evaluate the values to pass to the next layer/output
         """

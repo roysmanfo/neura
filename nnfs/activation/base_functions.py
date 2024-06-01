@@ -1,6 +1,7 @@
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
-from typing import List
-from typing import Any, List
+from typing import Any
+
+from nnfs.utils.types import InputValue, OutputValue
 
 class Activation(_ABC):
     """
@@ -49,9 +50,9 @@ class VectorialFunction(Activation):
     Base class for an activation function that also takes a vector (list) as input
     """
     @_abstractmethod
-    def apply_formula(self, x: List[float]) -> List[float]: ...
+    def apply_formula(self, x: InputValue) -> OutputValue: ...
     
     @_abstractmethod
-    def derivative(self, x: List[float]) -> List[float]: ...
+    def derivative(self, x: InputValue) -> OutputValue: ...
 
     

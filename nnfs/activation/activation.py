@@ -1,6 +1,9 @@
 import math as _math
 import random as _random
-from typing import List, Optional
+import numpy as np
+from typing import  Optional
+
+from nnfs.utils.types import InputValue, OutputValue
 
 from .base_functions import (
     ParametricFunction,
@@ -112,12 +115,12 @@ class Softmax(VectorialFunction):
     """
     ## Softmax activation function
     """
-    def apply_formula(self, x: List[float]) -> List[float]:
-        exp_x = [_math.exp(i) for i in x]
+    def apply_formula(self, x: InputValue) -> OutputValue:
+        exp_x = map(lambda i: _math.exp(i), x)
         sum_exp_x = sum(exp_x)
-        return [j / sum_exp_x for j in exp_x]
+        return np.array([j / sum_exp_x for j in exp_x], dtype=np.float64)
 
-    def derivative(self, x: List[float]) -> List[float]:
+    def derivative(self, x: InputValue) -> OutputValue:
         # Derivative of softmax is a bit more complex, typically used in cross-entropy loss
         raise NotImplementedError("Softmax derivative is usually combined with cross-entropy loss")
     

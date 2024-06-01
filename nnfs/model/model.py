@@ -1,9 +1,10 @@
+import numpy as np
 import random as _random
 from typing import Any, Iterable, Optional, Union
 
 from nnfs.layers import Layer, Input
 from nnfs.losses import Loss
-from nnfs.utils.types import InputValue
+from nnfs.utils.types import InputValue, OutputValue
 
 class Model:
     def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
@@ -128,13 +129,15 @@ LAYERS:
             print(summary)
         return summary
 
-    def predict(self, values: Iterable[InputValue], verbose: Optional[bool] = True) -> list[float]:
-        values = list(values)
+    def predict(self, values: InputValue, verbose: Optional[bool] = True) -> OutputValue:
+        
+        # pass all the through all layers of the network
         for i, layer in enumerate(self.layers):
             if verbose:
                 print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
             values = layer.calc(values)
+
         if verbose:
             print(f"predicting (layer: {len(self.layers)} / {len(self.layers)})")
         
-        return values # type: ignore
+        return values

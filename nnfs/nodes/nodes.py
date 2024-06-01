@@ -1,6 +1,6 @@
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
-from typing import List
 import nnfs.activation as _activation
+from nnfs.utils.types import InputValue
 
 class BaseNode(_ABC):
     def __init__(self, activation: _activation.ScalarFunction) -> None:
@@ -14,14 +14,14 @@ class BaseNode(_ABC):
         return self.activation.apply_formula(res)
 
     @_abstractmethod
-    def calc(self, x: List[float]) -> float:
+    def calc(self, x: InputValue) -> float:
         """
         Calculate the value of the data after it passed through this node
         """
         ...
 
 class Node(BaseNode):
-    def calc(self, x: List[float]) -> float:        
+    def calc(self, x: InputValue) -> float:        
         if len(x) != len(self.weights):
             raise ValueError(f"Input size {len(x)} does not match number of weights {len(self.weights)}")
         weighted_sum = sum(i * w for i, w in zip(x, self.weights))

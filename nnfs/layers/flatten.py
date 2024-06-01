@@ -1,5 +1,8 @@
-from typing import Any, Iterable, List, Optional, Union
+import numpy as np
+from typing import Any, Optional
+
 from nnfs.layers import Layer
+from nnfs.utils.types import InputValue, OutputValue
 
 
 class Flatten(Layer):
@@ -13,17 +16,18 @@ class Flatten(Layer):
         
         self.all_input_at_once = True
 
-    def calc(self, x: Union[float, Iterable[float]]) -> List[float]:
+    def calc(self, x: InputValue) -> OutputValue:
         if isinstance(x, (int, float, complex)):
             raise ValueError("expected Iterable, received:", type(x).__name__)
 
         return self._unpack(x)
 
-    def _unpack(self, paked: Any) -> list[float]:
-        vals: list[float] = []
+    def _unpack(self, paked: Any) -> OutputValue:
+        vals = np.array([], dtype=np.float64)
+
         for item in paked:
-            if isinstance(item, list):
-                vals.extend(self._unpack(item))
+            if isinstance(item, np.ndarray):
+                vals = np.concatenate([vals, self._unpack(item)])
             else:
-                vals.append(item)
+                vals = np.append(vals, item)
         return vals

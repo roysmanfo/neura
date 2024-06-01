@@ -1,6 +1,6 @@
-from typing import Any, Iterable, Union
+from typing import Any
+import numpy as np
 
-
-InputValue = Union[float, Iterable[float], Iterable[int], Iterable[Any]]
-
+InputValue = np.ndarray[Any, np.dtype[np.float64]]
+OutputValue = np.ndarray[Any, np.dtype[np.float64]]
 
