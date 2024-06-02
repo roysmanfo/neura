@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-from nnfs.utils.types import InputValue
+from neura.utils.types import InputValue
 
 
 

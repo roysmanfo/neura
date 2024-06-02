@@ -3,7 +3,7 @@ import random as _random
 import numpy as np
 from typing import  Optional
 
-from nnfs.utils.types import InputValue, OutputValue
+from neura.utils.types import InputValue, OutputValue
 
 from .base_functions import (
     ParametricFunction,

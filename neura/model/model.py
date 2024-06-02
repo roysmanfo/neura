@@ -2,10 +2,10 @@ import numpy as np
 import random as _random
 from typing import Any, List, Optional, Union
 
-from nnfs.layers import Layer, Input
-from nnfs.losses import Loss
-from nnfs.utils.types import InputValue, OutputValue
-from nnfs.evaluation import Evaluation
+from neura.layers import Layer, Input
+from neura.losses import Loss
+from neura.utils.types import InputValue, OutputValue
+from neura.evaluation import Evaluation
 
 
 class Model:

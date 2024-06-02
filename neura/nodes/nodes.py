@@ -1,6 +1,6 @@
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
-import nnfs.activation as _activation
-from nnfs.utils.types import InputValue
+import neura.activation as _activation
+from neura.utils.types import InputValue
 
 class BaseNode(_ABC):
     def __init__(self, activation: _activation.ScalarFunction) -> None:

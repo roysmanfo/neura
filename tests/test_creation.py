@@ -2,35 +2,47 @@ import unittest
 
 class Test_Creation(unittest.TestCase):
     def test_model_creation(self):
-        import nnfs
+        import neura
         model = None
 
         try:
-            model = nnfs.model.Model()
+            model = neura.model.Model()
         except:
             pass
 
-        self.assertTrue(isinstance(model, nnfs.model.Model), "model not created correctly")
+        self.assertTrue(isinstance(model, neura.model.Model), "model not created correctly")
     
     def test_model_values_change(self):
-        import nnfs
+        import neura
         
-        model = nnfs.model.Model([
-            nnfs.layers.Dense(16, activation=nnfs.activation.LeakyReLu(), input_shape=(16,)),
-            nnfs.layers.Dense(8, activation=nnfs.activation.Sigmoid()),
-            nnfs.layers.Dense(4, activation="tanh")
+        model = neura.model.Model([
+            neura.layers.Dense(16, activation=neura.activation.LeakyReLu(), input_shape=(16,)),
+            neura.layers.Dense(8, activation=neura.activation.Sigmoid()),
+            neura.layers.Dense(4, activation="tanh")
         ], name="Test Neural Network")
 
         self.assertEqual(model.name, "Test Neural Network", "unable to change model name")
     
     def test_model_layers_add(self):
-        import nnfs
+        import neura
         
-        model = nnfs.model.Model([
-            nnfs.layers.Dense(16, input_shape=(16,)),
-            nnfs.layers.Dense(8),
-            nnfs.layers.Dense(4)
+        model = neura.model.Model([
+            neura.layers.Dense(16, input_shape=(16,)),
+            neura.layers.Dense(8),
+            neura.layers.Dense(4)
         ])
+
+        self.assertEqual(len(model.layers), 3, "number of layers incorrect")
+    
+    def test_model_layers_add_2(self):
+        import neura
+        
+        model = neura.model.Model([
+            neura.layers.Dense(16, input_shape=(16,)),
+            neura.layers.Dense(8),
+        ])
+
+        model.add_layer(neura.layers.Dense(4))
 
         self.assertEqual(len(model.layers), 3, "number of layers incorrect")
 

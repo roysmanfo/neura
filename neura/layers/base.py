@@ -3,10 +3,10 @@ from abc import ABC as _ABC, abstractmethod as _abstractmethod
 import random as _random
 import numpy as np
 
-import nnfs.activation as _activation
-from nnfs.nodes import Node
-from nnfs.losses.loss import Loss as _Loss
-from nnfs.utils.types import InputValue, OutputValue
+import neura.activation as _activation
+from neura.nodes import Node
+from neura.losses.loss import Loss as _Loss
+from neura.utils.types import InputValue, OutputValue
 
 Activation = Union[str, _activation.Activation]
 

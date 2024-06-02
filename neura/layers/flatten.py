@@ -1,8 +1,8 @@
 import numpy as np
 from typing import Any, Optional
 
-from nnfs.layers import Layer
-from nnfs.utils.types import InputValue, OutputValue
+from neura.layers import Layer
+from neura.utils.types import InputValue, OutputValue
 
 
 class Flatten(Layer):

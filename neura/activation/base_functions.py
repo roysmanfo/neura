@@ -1,7 +1,7 @@
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 from typing import Any
 
-from nnfs.utils.types import InputValue, OutputValue
+from neura.utils.types import InputValue, OutputValue
 
 class Activation(_ABC):
     """

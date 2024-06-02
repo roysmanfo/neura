@@ -1,8 +1,8 @@
 import numpy as np
 
-from nnfs.layers import Layer
-from nnfs.nodes import Node
-from nnfs.utils.types import InputValue, OutputValue
+from neura.layers import Layer
+from neura.nodes import Node
+from neura.utils.types import InputValue, OutputValue
 
 
 class Dense(Layer):
