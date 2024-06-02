@@ -40,8 +40,30 @@ pred = model.predict(image, verbose=False)
 loss = model.evaluate(image, y)
 
 # print the results
+print("\nresults:")
 print(pred)
 print(y)
 print(loss)
 
+```
+
+```
+MyModel
+===============================================
+Total number of parameters: 102416
+===============================================
+
+LAYERS:
+
+0. Flatten              nodes: 1        params: 784
+1. Dense                nodes: 128      params: 100352
+2. Dense                nodes: 10       params: 1280
+
+===============================================
+
+results:
+[  55.0807834     8.48622231    7.46788936    6.80623906   -7.329365
+ -120.89559978   41.64848654  -64.82835674   29.99597943  -49.55296296]
+[0. 0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[9.992007221626415e-17]
 ```
