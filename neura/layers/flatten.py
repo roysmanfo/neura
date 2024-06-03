@@ -17,9 +17,11 @@ class Flatten(Layer):
         self.all_input_at_once = True
 
     def calc(self, x: InputValue) -> OutputValue:
-        if isinstance(x, (int, float, complex)):
-            raise ValueError("expected Iterable, received:", type(x).__name__)
-
+        self.nodes = [self.nodes[0]]
+        self.nodes[0].weights = [1 for _ in self.nodes[0].weights]
+        
+        if not isinstance(x, np.ndarray):
+            raise ValueError("expected numpy array, received:", type(x).__name__)
         return self._unpack(x)
 
     def _unpack(self, paked: Any) -> OutputValue:
