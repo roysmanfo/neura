@@ -6,3 +6,5 @@ from . import (
     model,
     utils
 )
+
+from .model import Model
