@@ -1,9 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
-
-from neura.utils.types import InputValue
-
-
+from neura.utils.types import InputValue, OutputValue
 
 class Loss(ABC):
     """
@@ -15,7 +12,7 @@ class Loss(ABC):
         pass
     
     @abstractmethod
-    def compute(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+    def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:
         """
         Compute the cost of the batch
 
@@ -27,52 +24,59 @@ class Loss(ABC):
             np.float64: The computed cost of the batch (loss).
         """
         raise NotImplementedError("This method needs to be implement in a subclass")
+    
+    @abstractmethod
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        """
+        Compute the derivative
 
+        Parameters:
+            :param y_true (np.ndarray): The true values.
+            :param y_pred (np.ndarray): The predicted values.
+
+        Returns:
+            np.ndarray: The derivative computed in y_pred.
+        """
+        raise NotImplementedError("This method needs to be implement in a subclass")
 
 class MeanAbsoluteError(Loss):
     """
     Mean Absolute Error (MAE)
-
-    more robust to outliers than MSE
     """
-
-    def compute(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+    def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:
         return np.mean(np.abs(y_true - y_pred))
 
-
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        return np.where(y_pred > y_true, 1, -1) / y_true.size
 
 class MeanSquaredError(Loss):
     """
-    Mean Squared Error (MAE)
-
-    Most commonly used loss function
-    - penalizes the model by producing large errors even for small mistakes 
+    Mean Squared Error (MSE)
     """
-
-    def compute(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
+    def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:
         return np.mean((y_true - y_pred) ** 2)
     
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        return (2 * (y_pred - y_true)) / y_true.size
+
 class BinaryCrossEntropy(Loss):
     """
     Binary Cross-Entropy Loss function (Log Loss)
-    
-    This is mostly used for categorical models
-    - works well in the interval [0, 1] (2 classes)
     """
     
     def compute(self, y_true: InputValue, y_pred:InputValue) -> np.float64:
         # ? avoid calculating log(0)
         y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
-        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)) 
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+    
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) * y_true.size)
 
 class CategoricalCrossEntropy(Loss):
     """
     Categorical Cross-Entropy Loss function
-    
-    This is mostly used for categorical models
-    - works like BCE, but supports multiple classes 
     """
-
     def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:
         # ? avoid calculating log(0)
         y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
@@ -81,33 +85,27 @@ class CategoricalCrossEntropy(Loss):
 class HingeLoss(Loss):
     """
     Hinge Loss
-
-    This is mostly used for categorical models
-    - uses to penalize both wrong and insecure answers
     """
-
     def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:        
         return np.mean(np.maximum(0, 1 - y_true * y_pred))
+    
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        return np.where(y_true * y_pred < 1, -y_true, 0) / y_true.size
 
 class LogCoshLoss(Loss):
     """
     Log-Cosh Loss
-
-    - This loss function is not so affected by occasional mistakes like MSE
     """
-
     def compute(self, y_true: InputValue, y_pred: InputValue) -> np.float64:        
         return np.mean(np.log(np.cosh(y_pred - y_true)))
+    
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        return np.tanh(y_pred - y_true) / y_true.size
 
 class HuberLoss(Loss):
     """
     Huber Loss
-
-    This loss function is less sensitive to outliers in data than the squared error loss.    
-    - It is quadratic for small errors and linear for large errors.
-      (combination of MSE and MAE)
     """
-    
     def __init__(self, delta: float = 1.0):
         """
         Initializes the Huber loss with a given delta value.
@@ -125,3 +123,7 @@ class HuberLoss(Loss):
         
         return np.mean(np.where(is_small_error, squared_loss, linear_loss))
     
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> OutputValue:
+        error = y_true - y_pred
+        is_small_error = np.abs(error) <= self.delta
+        return np.where(is_small_error, error, self.delta * np.sign(error)) / y_true.size
