@@ -4,6 +4,7 @@ from . import (
     layers,
     losses,
     model,
+    optimizers,
     utils
 )
 
