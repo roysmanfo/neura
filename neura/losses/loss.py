@@ -81,6 +81,10 @@ class CategoricalCrossEntropy(Loss):
         # ? avoid calculating log(0)
         y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
         return -np.mean(y_true * np.log(y_pred))
+    
+    def derivative(self, y_true: InputValue, y_pred: InputValue) -> InputValue:
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+        return -(y_true / y_pred) / y_true.shape[0]
 
 class HingeLoss(Loss):
     """
