@@ -6,7 +6,7 @@ class Loss(ABC):
     """
     Base class for all loss functions
 
-    All classes that inherit this class have to redefine the method `compute()`
+    All classes that inherit this class have to redefine the methods `compute()` and `derivative()`
     """
     def __init__(self) -> None:
         pass
