@@ -132,7 +132,8 @@ LAYERS:
         return summary
 
     def predict(self, values: InputValue, verbose: Optional[bool] = True) -> OutputValue:
-        
+        # TODO: add support for batch input 
+
         # pass all the through all layers of the network
         for i, layer in enumerate(self.layers):
             if verbose:
@@ -147,13 +148,29 @@ LAYERS:
     def evaluate(self, x: InputValue, y: InputValue) -> List[Any]:
         """
         Evaluate the models performance
+        
+        Parameters
+            :param x (np.ndarray): a batch of sample data for the model evaluation 
+            :param y (np.ndarray): the corresponding expected results 
         """
+        
 
         if not self.loss:
             raise RuntimeError("You need to call compile() before evaluating")
-        loss = self.loss.compute(y, self.predict(x, verbose=False))
         
-        e = Evaluation(loss, metrics=None)
+        if not self.layers:
+            raise RuntimeError("the model has no layers yet")
+        
+        if (input_shape := self.layers[0].input_shape) and len(input_shape) + 1 != len(x.shape):
+            raise ValueError("unable to process batch input_shape {}." \
+                             " expected shape: {}".format(x.shape, '(n, ' + ', '.join(str(i) for i in input_shape) + ')'))
 
+        
+        loss = 0
+        for i, sample in enumerate(x):
+            # TODO: reduce overhead and increase efficiency by processing all the data at once
+            loss += self.loss.compute(y[i], self.predict(sample, verbose=False))
+
+        e = Evaluation(np.divide(loss, x.shape[0]), metrics=None)
 
         return [e.loss]
