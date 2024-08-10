@@ -37,7 +37,7 @@ class ParametricFunction(Activation):
 
 class ScalarFunction(Activation):
     """
-    Base class for an activation function that also takes a vector (list) as input
+    Base class for an activation function that takes a single value as input
     """
     @_abstractmethod
     def apply_formula(self, x: float) -> float: ... 
@@ -47,7 +47,7 @@ class ScalarFunction(Activation):
 
 class VectorialFunction(Activation):
     """
-    Base class for an activation function that also takes a vector (list) as input
+    Base class for an activation function that also takes a vector (ndarray) as input
     """
     @_abstractmethod
     def apply_formula(self, x: InputValue) -> OutputValue: ...
