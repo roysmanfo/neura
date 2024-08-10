@@ -2,8 +2,10 @@ import numpy as np
 import random as _random
 from typing import Any, List, Optional, Union
 
-from neura.layers import Layer, Input
+from neura import optimizers
+from neura import losses
 from neura.losses import Loss
+from neura.layers import Layer, Input
 from neura.utils.types import InputValue, OutputValue
 from neura.evaluation import Evaluation
 
@@ -25,8 +27,8 @@ class Model:
         if learning_rate <= 0:
             raise ValueError("learning_rate must be > 0")
         
-        self.loss = None
-        self.optimizer = None
+        self.loss: Loss = losses.MeanSquaredError()
+        self.optimizer: optimizers.Optimizer = optimizers.SGD()
         self.metrics = []
 
         self.layers: list[Layer] = []
@@ -87,10 +89,10 @@ class Model:
 
         self.layers.append(layer)
 
-    def compile(self, loss: Union[Loss, str], optimizer: Optional[str] = "adam", metrics: Optional[list[Any]] = None):
-        if not isinstance(loss, Loss):
-            raise ValueError("")
-        
+    def compile(self, loss: Union[Loss, str], optimizer: Optional[optimizers.Optimizer] = None, metrics: Optional[list[Any]] = None):
+        assert isinstance(loss, Loss), "`loss` must be a loss function"
+        assert isinstance(optimizer, optimizers.Optimizer), "`optimizer` must be a valid Optimizer instance"
+
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
