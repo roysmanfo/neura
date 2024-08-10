@@ -1,3 +1,5 @@
+import numpy as np
+
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 from typing import Any
 
@@ -33,17 +35,17 @@ class ParametricFunction(Activation):
 
     def __init__(self, *args: list[str], **kwargs: dict[str, str]) -> None:
         super().__init__()
-        self.params: dict[str, float] = {} # param_name: value
+        self.params: dict[str, np.float64] = {} # param_name: value
 
 class ScalarFunction(Activation):
     """
     Base class for an activation function that takes a single value as input
     """
     @_abstractmethod
-    def apply_formula(self, x: float) -> float: ... 
+    def apply_formula(self, x: np.float64) -> np.float64: ... 
     
     @_abstractmethod
-    def derivative(self, x: float) -> float: ...
+    def derivative(self, x: np.float64) -> np.float64: ...
 
 class VectorialFunction(Activation):
     """

@@ -17,66 +17,66 @@ class Linear(ScalarFunction):
     ## f(x) = x
     """
 
-    def apply_formula(self, x: float) -> float:
+    def apply_formula(self, x: np.float64) -> np.float64:
         return x
     
-    def derivative(self, x: float) -> float:
-        return 1
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(1)
         
 class Sigmoid(ScalarFunction):
     """
     ## f(x) = 1 / (1 + e^(-x))
     """
 
-    def apply_formula(self, x: float) -> float:
-        return 1 / (1 + _math.exp(-x))
+    def apply_formula(self, x: np.float64) -> np.float64:
+        return np.float64(1 / (1 + _math.exp(-x)))
 
-    def derivative(self, x: float) -> float:
-        return _math.exp(x) / ((1 + _math.exp(x)) ** 2)
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(_math.exp(x) / ((1 + _math.exp(x)) ** 2))
     
 class Exponential(ScalarFunction):
     """
     ## f(x) = e^(x)
     """
 
-    def apply_formula(self, x: float) -> float:
-        return _math.exp(x)
+    def apply_formula(self, x: np.float64) -> np.float64:
+        return np.float64(_math.exp(x))
     
-    def derivative(self, x: float) -> float:
-        return _math.exp(x)
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(_math.exp(x))
 
 class ReLu(ScalarFunction):
     """
     ## f(x) = max(0, x)
     """
 
-    def apply_formula(self, x: float) -> float:
-        return max(0, x)
+    def apply_formula(self, x: np.float64) -> np.float64:
+        return np.float64(max(0, x))
 
-    def derivative(self, x: float) -> float:
-        return 0 if x <= 0 else 1
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(0 if x <= 0 else 1)
     
 class LeakyReLu(ScalarFunction):
     """
     ## f(x) = max(x, 0.1x)
     """
 
-    def apply_formula(self, x: float) -> float:
+    def apply_formula(self, x: np.float64) -> np.float64:
         return max(x, .1 * x)
 
-    def derivative(self, x: float) -> float:
-        return 1 if x >= 0 else .1
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(1 if x >= 0 else .1)
 
 class Tanh(ScalarFunction):
     """
     ## f(x) = tanh(x)
     """
 
-    def apply_formula(self, x: float) -> float:
-        return _math.tanh(x)
+    def apply_formula(self, x: np.float64) -> np.float64:
+        return np.float64(_math.tanh(x))
 
-    def derivative(self, x: float) -> float:
-        return _math.cosh(x) ** -2 
+    def derivative(self, x: np.float64) -> np.float64:
+        return np.float64(_math.cosh(x) ** -2 )
     
 class Swish(ScalarFunction):
     """
@@ -86,10 +86,10 @@ class Swish(ScalarFunction):
         super().__init__()
         self.sigmoid = Sigmoid()
     
-    def apply_formula(self, x: float) -> float:
+    def apply_formula(self, x: np.float64) -> np.float64:
         return x * self.sigmoid.apply_formula(x)
 
-    def derivative(self, x: float) -> float:
+    def derivative(self, x: np.float64) -> np.float64:
         return self.sigmoid.apply_formula(x) + x * self.sigmoid.derivative(x)
     
 class PReLU (ParametricFunction):
@@ -98,18 +98,18 @@ class PReLU (ParametricFunction):
     """
     def __init__(self, a: Optional[float] = None) -> None:
         super().__init__()
-        self.a: float = a if a else _random.gauss(0, 1)
+        self.a: np.float64 = np.float64(a if a else _random.gauss(0, 1))
         self.params = {"a": self.a}
 
-    def apply_formula(self, x: float) -> float:
+    def apply_formula(self, x: np.float64) -> np.float64:
         if x < 0:
             return self.a * x
         return x
 
-    def derivative(self, x: float) -> float:
+    def derivative(self, x: np.float64) -> np.float64:
         if x < 0:
             return self.a
-        return 1    
+        return np.float64(1) 
 
 class Softmax(VectorialFunction):
     """
