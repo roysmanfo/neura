@@ -7,8 +7,8 @@ DtFloat64 = np.dtype[np.float64]
 InputValue = np.ndarray[Any, DtFloat64]
 OutputValue = np.ndarray[Any, DtFloat64]
 
-NodeWeight = np.dtype[np.float32]
-NodeWeights = np.ndarray[Any, NodeWeight]
+NodeWeight = np.float64
+NodeWeights = np.ndarray[Any, np.dtype[np.float64]]
 NodeOutput = Float64
 
 Gradient = DtFloat64
