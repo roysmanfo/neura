@@ -114,8 +114,10 @@ class HuberLoss(Loss):
         """
         Initializes the Huber loss with a given delta value.
         
-        Parameters:
-            :param delta (float): The threshold at which to switch from quadratic to linear loss.
+        Parameters
+        ----------
+        delta: float
+            The threshold at which to switch from quadratic to linear loss.
         """
         self.delta = delta
 
