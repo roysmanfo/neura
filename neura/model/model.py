@@ -74,7 +74,7 @@ class Model:
                 previous_layer_node_count = len(self.layers[-1].nodes)
 
             for n in layer.nodes:
-                n.weights = [_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)]
+                n.weights = np.array([_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)])
         else:
 
             if not layer.input_shape:
@@ -85,7 +85,7 @@ class Model:
 
             self.input_size = Input(layer.input_shape)
             for n in layer.nodes:
-                n.weights = [_random.uniform(-1, 1) for _ in range(self.input_size)]
+                n.weights = np.array([_random.uniform(-1, 1) for _ in range(self.input_size)])
 
         self.layers.append(layer)
 
@@ -140,13 +140,28 @@ LAYERS:
         for i, layer in enumerate(self.layers):
             if verbose:
                 print(f"predicting (layer: {i + 1} / {len(self.layers)})", end="\r")
-            values = layer.calc(values)
+            values = layer.forward(values)
 
         if verbose:
             print(f"predicting (layer: {len(self.layers)} / {len(self.layers)})")
         
         return values
     
+    def forward(self, x: InputValue) -> OutputValue:
+        return self.predict(x, verbose=False)
+
+    def compute_loss(self, y_true: InputValue, y_pred: InputValue):
+        return self.loss.compute(y_true, y_pred)
+
+    def backward(self, y_true: InputValue, y_pred: InputValue) -> None:
+        output_gradient = self.loss.derivative(y_true, y_pred)
+        
+        # Backpropagate through the layers
+        for layer in reversed(self.layers):
+            gradients = layer.compute_gradients(output_gradient)
+            layer.update_weights(self.optimizer, gradients)
+            output_gradient = np.sum(gradients, axis=0) # this will be needed by the previous layer
+
     def evaluate(self, x: InputValue, y: InputValue) -> List[Any]:
         """
         Evaluate the models performance
@@ -171,7 +186,7 @@ LAYERS:
         loss = 0
         for i, sample in enumerate(x):
             # TODO: reduce overhead and increase efficiency by processing all the data at once
-            loss += self.loss.compute(y[i], self.predict(sample, verbose=False))
+            loss += self.compute_loss(y[i], self.predict(sample, verbose=False))
 
         e = Evaluation(np.divide(loss, x.shape[0]), metrics=None)
 

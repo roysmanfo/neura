@@ -16,9 +16,9 @@ class Flatten(Layer):
         
         self.all_input_at_once = True
 
-    def calc(self, x: InputValue) -> OutputValue:
+    def forward(self, x: InputValue) -> OutputValue:
         self.nodes = [self.nodes[0]]
-        self.nodes[0].weights = [1 for _ in self.nodes[0].weights]
+        self.nodes[0].weights = np.array([1 for _ in self.nodes[0].weights])
         
         if not isinstance(x, np.ndarray):
             raise ValueError("expected numpy array, received:", type(x).__name__)

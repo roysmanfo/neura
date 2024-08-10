@@ -32,7 +32,8 @@ class Sigmoid(ScalarFunction):
         return np.float64(1 / (1 + _math.exp(-x)))
 
     def derivative(self, x: np.float64) -> np.float64:
-        return np.float64(_math.exp(x) / ((1 + _math.exp(x)) ** 2))
+        sigmoid_x = self.apply_formula(x)
+        return x * 1 - sigmoid_x
     
 class Exponential(ScalarFunction):
     """
@@ -76,7 +77,8 @@ class Tanh(ScalarFunction):
         return np.float64(_math.tanh(x))
 
     def derivative(self, x: np.float64) -> np.float64:
-        return np.float64(_math.cosh(x) ** -2 )
+        tanh_x = self.apply_formula(x)
+        return 1 - tanh_x ** 2
     
 class Swish(ScalarFunction):
     """

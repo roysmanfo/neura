@@ -37,8 +37,13 @@ class Node(BaseNode):
             raise ValueError(f"Input size {len(x)} does not match number of weights {len(self.weights)}")
 
         self.input = np.array(x)
-        self.z = np.sum(self.input * self.weights, dtype=NodeOutput)
-        out = self.activate(self.z)
+        weighted_sum = np.sum(self.input * self.weights, dtype=np.float64)
+        
+        # Clip weighted_sum to avoid overflow
+        weighted_sum = np.clip(weighted_sum, -1e10, 1e10)
+        
+        self.z = weighted_sum
+        out = self.activate(weighted_sum)
         return np.float64(out)
     
     def compute_gradient(self, output_gradient: np.float64) -> Gradients:

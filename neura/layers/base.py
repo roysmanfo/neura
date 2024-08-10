@@ -6,7 +6,8 @@ import numpy as np
 import neura.activation as _activation
 from neura.nodes import Node
 from neura.losses.loss import Loss as _Loss
-from neura.utils.types import InputValue, OutputValue
+from neura.optimizers.base import Optimizer
+from neura.utils.types import Gradients, InputValue, OutputValue
 
 Activation = Union[str, _activation.Activation]
 
@@ -98,7 +99,7 @@ class Layer(_ABC):
         self._last_layer = val
 
     
-    def _analize(self, x: InputValue, node: Node) -> float:
+    def _analize(self, x: InputValue, node: Node) -> np.float64:
         """
         Evaluate the values to pass to given next node
 
@@ -107,7 +108,7 @@ class Layer(_ABC):
         ...
 
     @_abstractmethod
-    def calc(self, x: InputValue) -> OutputValue:
+    def forward(self, x: InputValue) -> OutputValue:
         """
         Evaluate the values to pass to the next layer/output
         """
@@ -121,3 +122,18 @@ class Layer(_ABC):
             raise ValueError("unsupported loss function of type: %s " % type(func))
         
         self.loss = func
+
+
+    def compute_gradients(self, output_gradient: Gradients) -> list[Gradients]:
+        gradients: list[Gradients] = []
+        for i, node in enumerate(self.nodes):
+            node_gradient = node.compute_gradient(output_gradient[i])
+            gradients.append(node_gradient)
+        return gradients
+    
+    def update_weights(self, optimizer: Optimizer, gradients: list[Gradients]) -> None:
+        for i, node in enumerate(self.nodes):
+            optimizer.apply_gradients(
+                weights=node.weights,
+                gradients=gradients[i]
+            )
