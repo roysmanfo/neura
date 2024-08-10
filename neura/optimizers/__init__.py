@@ -1,5 +1,5 @@
 
 
 
-from .base import BaseOptimizer
+from .base import Optimizer
 

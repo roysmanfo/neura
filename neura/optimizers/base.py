@@ -2,7 +2,8 @@ from abc import ABC as _ABC, abstractmethod as _abstractmethod
 from typing import Optional
 
 
-class BaseOptimizer(_ABC):
+
+class Optimizer(_ABC):
     def __init__( self, learning_rate: float, name: Optional[str] = None ):
 
         if name is None:
