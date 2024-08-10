@@ -55,6 +55,9 @@ class Loss(ABC):
             "This method needs to be implement in a subclass")
 
 
+    def __call__(self, *args: Any, **kwargs: Any):
+        return self.compute(*args, **kwargs)
+
 class ParametricLoss(Loss):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
