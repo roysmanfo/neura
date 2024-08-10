@@ -43,18 +43,9 @@ class Layer(_ABC):
             self.activation = activation
         
         elif isinstance(activation, str):
-            #! temporary
-            match activation:
-                case "exponential": self.activation = _activation.LeakyReLu()
-                case "leakyrelu": self.activation = _activation.LeakyReLu()
-                case "linear": self.activation = _activation.Linear()
-                case "prelu": self.activation = _activation.PReLU()
-                case "relu": self.activation = _activation.ReLu()
-                case "sigmoid": self.activation = _activation.Sigmoid()
-                case "softmax": self.activation = _activation.Softmax()
-                case "swish": self.activation = _activation.Swish()
-                case "tanh": self.activation = _activation.Tanh()
-                case _: raise ValueError(f"Invaid type for activation: '{activation}'")
+            self.activation = self._get_activation_func(activation)
+            if self.activation is None:
+                raise ValueError(f"Invaid type for activation: '{activation}'")
         
         elif not activation:
             self.activation = _activation.Linear()
@@ -74,6 +65,22 @@ class Layer(_ABC):
 
         self.input_shape = input_shape
 
+
+    #! temporary
+    def _get_activation_func(self, name: str) -> _activation.Activation | None:
+        func = {
+            "exponential":  _activation.Exponential(),
+            "leakyrelu":    _activation.LeakyReLu(),
+            "linear":       _activation.Linear(),
+            "prelu":        _activation.PReLU(),
+            "relu":         _activation.ReLu(),
+            "sigmoid":      _activation.Sigmoid(),
+            "softmax":      _activation.Softmax(),
+            "swish":        _activation.Swish(),
+            "tanh":         _activation.Tanh(),
+        }
+
+        return func.get(name.lower(), None)
     
     def __str__(self) -> str:
         return self.__class__.__name__ + f"(nodes={len(self.nodes)}, bias={self.bias})"
