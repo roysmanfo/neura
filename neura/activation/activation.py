@@ -117,6 +117,10 @@ class Softmax(VectorialFunction):
     """
     ## Softmax activation function
     """
+    def __init__(self) -> None:
+        super().__init__()
+        self.differentiable = False
+
     def apply_formula(self, x: InputValue) -> OutputValue:
         exp_x = map(lambda i: _math.exp(i), x)
         sum_exp_x = sum(exp_x)

@@ -12,6 +12,7 @@ class Activation(_ABC):
     
     def __init__(self) -> None:
         self.name = self.__class__.__name__
+        self.differentiable: bool = True
 
     @_abstractmethod
     def apply_formula(self, x: Any) -> Any:

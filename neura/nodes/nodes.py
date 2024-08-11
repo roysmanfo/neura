@@ -46,7 +46,3 @@ class Node(BaseNode):
         out = self.activate(weighted_sum)
         return np.float64(out)
     
-    def compute_gradient(self, output_gradient: np.float64) -> Gradients:
-        activation_derivative = self.activation.derivative(self.z)
-        weight_gradient = output_gradient * activation_derivative * self.input
-        return weight_gradient

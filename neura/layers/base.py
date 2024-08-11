@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Any, Optional, Union
 from abc import ABC as _ABC, abstractmethod as _abstractmethod
 import random as _random
 import numpy as np
@@ -7,7 +7,7 @@ import neura.activation as _activation
 from neura.nodes import Node
 from neura.losses.loss import Loss as _Loss
 from neura.optimizers.base import Optimizer
-from neura.utils.types import Gradients, InputValue, OutputValue
+from neura.utils.types import Gradient, Gradients, InputValue, OutputValue
 
 Activation = Union[str, _activation.Activation]
 
@@ -90,7 +90,13 @@ class Layer(_ABC):
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Layer):
             return False
-        return len(self.nodes) == len(__value.nodes) and all([node == __value.nodes[index] for index, node in enumerate(self.nodes)]) and self.bias == __value.bias
+        
+        return all([
+            len(self.nodes) == len(__value.nodes),
+            all([node == __value.nodes[index]
+                for index, node in enumerate(self.nodes)]),
+            self.bias == __value.bias
+        ])
 
     @property
     def is_last_layer(self) -> bool:
@@ -124,13 +130,40 @@ class Layer(_ABC):
         
         self.loss = func
 
-
-    def compute_gradients(self, output_gradient: Gradients) -> list[Gradients]:
+    def compute_gradients(self, output_gradients: Gradients) -> list[Gradients]:
         gradients: list[Gradients] = []
         for i, node in enumerate(self.nodes):
-            node_gradient = node.compute_gradient(output_gradient[i])
-            gradients.append(node_gradient)
+            node_gradients = self._compute_node_gradients(
+                node, output_gradients[i]
+            )
+            gradients.append(node_gradients)
         return gradients
+
+    def _compute_node_gradients(self, node: Node, output_gradient: np.float64) -> Gradients:
+        if not self.activation:
+            raise
+
+        activation_derivative = 0
+    
+        # some more complex activation functions are not differentiable
+        # (or at least not fully implemented),
+        # this means that there is littel chance to know what a change
+        # in the weights might do. for now consider the derivative as 0, therefore
+        # the weights don't change as we dont know if the function L(x) 
+        # is increasing or decreasing in x)
+ 
+        if self.activation.differentiable:
+            activation_derivative = self.activation.derivative(node.z)
+        
+        weight_gradient = output_gradient * activation_derivative
+        weight_gradient *= node.input
+        return weight_gradient
+
+    def _pad_to_match_shape(self, a: InputValue, shape: tuple[int, ...]):
+        if a.shape == shape:
+            return a
+        pad_width = [(0, max(0, s - a_s)) for a_s, s in zip(a.shape, shape)]
+        return np.pad(a, pad_width, mode='constant')
     
     def update_weights(self, optimizer: Optimizer, gradients: list[Gradients]) -> None:
         for i, node in enumerate(self.nodes):

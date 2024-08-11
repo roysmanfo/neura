@@ -1,6 +1,7 @@
 import numpy as np
 import random as _random
 from typing import Any, List, Optional, Union
+import itertools
 
 from neura import optimizers
 from neura import losses
@@ -147,7 +148,7 @@ LAYERS:
         return self.predict(x, verbose=False)
 
     def compute_loss(self, y_true: InputValue, y_pred: InputValue):
-        return self.loss.compute(y_true, y_pred)
+        return self.loss(y_true, y_pred)
 
     def backward(self, y_true: InputValue, y_pred: InputValue) -> None:
         output_gradient = self.loss.derivative(y_true, y_pred)
@@ -160,6 +161,58 @@ LAYERS:
                 
                 # this will be needed by the previous layer
                 output_gradient = np.sum(gradients, axis=0)
+
+    def train(self,
+        x: InputValue,
+        y: InputValue,
+        batch_size: int = 16,
+        epochs: int = 5,
+        shuffle: bool = False,
+        verbose: bool = True) -> None:
+
+        if len(x) != len(y):
+            raise ValueError("X and y are not homogeneous (len(x) != len(y))")
+
+        for epoch in range(epochs):
+            if shuffle and self._is_batch_input(x):
+                x, y = self._shuffle_arrays(x, y)
+
+            # x_batches = [x[i:i + batch_size] for i in range(0, len(x), batch_size)]
+            # y_batches = [y[i:i + batch_size] for i in range(0, len(y), batch_size)]
+
+            epoch_loss = 0
+
+            for i, data in enumerate(x):
+                y_pred = self.forward(data)
+                epoch_loss += self.compute_loss(y[i], y_pred)
+                self.backward(y[i], y_pred)
+
+            if verbose:
+                print(f"Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss / len(x)}")
+
+    def _shuffle_arrays(self, *arrays: InputValue):
+        """
+        Shuffle 2 or more arrays, while preserving order
+        
+        Note: all the arrays must have the same lenght
+        """
+
+        perm = np.random.permutation(len(arrays[0]))
+        return tuple(array[perm] for array in arrays)
+
+    def _is_batch_input(self, x: InputValue) -> bool:
+        if not self.layers:
+            raise RuntimeError("no layers have been added yet")
+
+        input_shape = self.layers[0].input_shape
+        if not input_shape:
+            raise RuntimeError("no input_shape has been provided")
+
+        if len(input_shape) + 1 != len(x.shape):
+            return False
+
+        return True
+
 
     def evaluate(self, x: InputValue, y: InputValue) -> List[Any]:
         """
@@ -177,9 +230,13 @@ LAYERS:
         if not self.layers:
             raise RuntimeError("the model has no layers yet")
         
-        if (input_shape := self.layers[0].input_shape) and len(input_shape) + 1 != len(x.shape):
-            raise ValueError("unable to process batch input_shape {}." \
-                             " expected shape: {}".format(x.shape, '(n, ' + ', '.join(str(i) for i in input_shape) + ')'))
+        if not self._is_batch_input(x):
+            input_shape = self.layers[0].input_shape
+            if not input_shape:
+                raise ValueError("no input_shape has been provided") # just do it, ... please 
+            
+            raise ValueError("unable to process batch input_shape {}. " \
+                             "expected shape: {}".format(x.shape, '(n, ' + ', '.join(str(i) for i in input_shape) + ')'))
 
         
         loss = 0
