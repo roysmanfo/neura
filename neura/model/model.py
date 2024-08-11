@@ -11,7 +11,7 @@ from neura.evaluation import Evaluation
 
 
 class Model:
-    def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None, learning_rate: float = .001) -> None:
+    def __init__(self, layers: Optional[list[Layer]] = None, name: Optional[str] = None) -> None:
         """
         parameters:
         
@@ -24,15 +24,11 @@ class Model:
         if not isinstance(name, str) and not name is None:
             raise ValueError("name must be of type str or None")
         
-        if learning_rate <= 0:
-            raise ValueError("learning_rate must be > 0")
-        
         self.loss: Loss = losses.MeanSquaredError()
         self.optimizer: optimizers.Optimizer = optimizers.SGD()
         self.metrics = []
 
         self.layers: list[Layer] = []
-        self.learning_rate = learning_rate        
         self.name = "Model" if name is None else str(name) or "Model"
 
         if layers:
