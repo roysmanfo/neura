@@ -14,6 +14,7 @@ class Flatten(Layer):
             input_shape=input_shape
         )
         
+        self.trainable = False
         self.all_input_at_once = True
 
     def forward(self, x: InputValue) -> OutputValue:

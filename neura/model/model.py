@@ -154,9 +154,12 @@ LAYERS:
         
         # Backpropagate through the layers
         for layer in reversed(self.layers):
-            gradients = layer.compute_gradients(output_gradient)
-            layer.update_weights(self.optimizer, gradients)
-            output_gradient = np.sum(gradients, axis=0) # this will be needed by the previous layer
+            if layer.trainable:
+                gradients = layer.compute_gradients(output_gradient)
+                layer.update_weights(self.optimizer, gradients)
+                
+                # this will be needed by the previous layer
+                output_gradient = np.sum(gradients, axis=0)
 
     def evaluate(self, x: InputValue, y: InputValue) -> List[Any]:
         """

@@ -34,6 +34,7 @@ class Layer(_ABC):
                  ) -> None:
         
         self._last_layer = False
+        self.trainable = True
         self.all_input_at_once = False
         self.loss = None
 
