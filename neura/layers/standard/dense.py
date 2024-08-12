@@ -2,19 +2,14 @@ import numpy as np
 
 from neura.layers import Layer
 from neura.nodes import Node
-from neura.optimizers.base import Optimizer
-from neura.utils.types import Gradients, InputValue, OutputValue
+from neura.utils.types import InputValue, OutputValue
 
 
 class Dense(Layer):
     def __eq__(self, __value: object) -> bool:
-        if not isinstance(__value, Layer):
+        if not isinstance(__value, self.__class__):
             return False
         return len(self.nodes) == len(__value.nodes) and all([node == __value.nodes[index] for index, node in enumerate(self.nodes)]) and self.bias == __value.bias
-
-    def _analize(self, x: InputValue, node: Node) -> np.float64:
-        res = node.calc(x) + self.bias
-        return res
 
     def forward(self, x: InputValue) -> OutputValue:    
         if not isinstance(x, (np.ndarray)):

@@ -3,6 +3,7 @@ Available model layers
 """
 
 from .base import Layer
-from .dense import Dense
-from .flatten import Flatten
-from .input import Input
+from .standard.dense import Dense
+from .regularization.dropout import Dropout
+from .reshape.flatten import Flatten
+from .standard.input import Input
