@@ -1,5 +1,5 @@
 from typing import Any, Optional, Union
-from abc import ABC as _ABC, abstractmethod as _abstractmethod
+from abc import ABCMeta as _ABCMeta, abstractmethod as _abstractmethod
 import random as _random
 import numpy as np
 
@@ -7,12 +7,12 @@ import neura.activation as _activation
 from neura.nodes import Node
 from neura.losses.loss import Loss as _Loss
 from neura.optimizers.base import Optimizer
-from neura.utils.types import Gradient, Gradients, InputValue, OutputValue
+from neura.utils.types import Gradients, InputValue, OutputValue
 
 Activation = Union[str, _activation.Activation]
 
 
-class Layer(_ABC):
+class Layer(metaclass=_ABCMeta):
     """
     Abstract Base Class for all layers
 
@@ -34,6 +34,7 @@ class Layer(_ABC):
                  ) -> None:
         
         self._last_layer = False
+        self.name = self.__class__.__name__
         self.trainable = True
         self.all_input_at_once = False
         self.loss = None
@@ -104,15 +105,6 @@ class Layer(_ABC):
 
     def set_is_last_layer(self, val: bool) -> None:
         self._last_layer = val
-
-    
-    def _analize(self, x: InputValue, node: Node) -> np.float64:
-        """
-        Evaluate the values to pass to given next node
-
-        y = b + ∑(wx)
-        """
-        ...
 
     @_abstractmethod
     def forward(self, x: InputValue) -> OutputValue:
