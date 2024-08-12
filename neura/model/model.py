@@ -1,10 +1,10 @@
 import numpy as np
 import random as _random
 from typing import Any, List, Optional, Union
-import itertools
 
 from neura import optimizers
 from neura import losses
+from neura import preprocessing 
 from neura.losses import Loss
 from neura.layers import Layer, Input
 from neura.utils.types import InputValue, OutputValue
@@ -171,11 +171,17 @@ LAYERS:
         verbose: bool = True) -> None:
 
         if len(x) != len(y):
-            raise ValueError("X and y are not homogeneous (len(x) != len(y))")
+            raise ValueError("X and y are not the same size (len(x) != len(y))")
+
+        elif not isinstance(epochs, int) and epochs < 1:
+            raise ValueError("epochs must be an int >=1")
+
+        elif not isinstance(batch_size, int) and batch_size < 1:
+            raise ValueError("batch_size must be an int >=1")
 
         for epoch in range(epochs):
             if shuffle and self._is_batch_input(x):
-                x, y = self._shuffle_arrays(x, y)
+                x, y = preprocessing.shuffle(x, y)
 
             # x_batches = [x[i:i + batch_size] for i in range(0, len(x), batch_size)]
             # y_batches = [y[i:i + batch_size] for i in range(0, len(y), batch_size)]
@@ -189,16 +195,6 @@ LAYERS:
 
             if verbose:
                 print(f"Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss / len(x)}")
-
-    def _shuffle_arrays(self, *arrays: InputValue):
-        """
-        Shuffle 2 or more arrays, while preserving order
-        
-        Note: all the arrays must have the same lenght
-        """
-
-        perm = np.random.permutation(len(arrays[0]))
-        return tuple(array[perm] for array in arrays)
 
     def _is_batch_input(self, x: InputValue) -> bool:
         if not self.layers:
