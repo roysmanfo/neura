@@ -23,14 +23,5 @@ class Flatten(Layer):
         
         if not isinstance(x, np.ndarray):
             raise ValueError("expected numpy array, received:", type(x).__name__)
-        return self._unpack(x)
+        return x.flatten()
 
-    def _unpack(self, paked: Any) -> OutputValue:
-        vals = np.array([], dtype=np.float64)
-
-        for item in paked:
-            if isinstance(item, np.ndarray):
-                vals = np.concatenate([vals, self._unpack(item)])
-            else:
-                vals = np.append(vals, item)
-        return vals
