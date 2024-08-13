@@ -29,15 +29,23 @@ class Layer(metaclass=_ABCMeta):
                  units: int,
                  bias: Optional[bool] = None,
                  activation: Optional[Activation] = None,
-                 input_shape: Optional[tuple[int, ...]] = None
-
+                 input_shape: Optional[tuple[int, ...]] = None,
+                 **kwargs: dict[str, Any]
                  ) -> None:
-        
+
         self._last_layer = False
         self.name = self.__class__.__name__
         self.trainable = True
-        self.all_input_at_once = False
         self.loss = None
+
+        # pass all data in one go
+        self.all_input_at_once = False
+
+        # if true, it means that this layer 
+        # does not do any actuall computation.
+        # most layers that have this set to true have only 1 node,
+        # making it difficult for the model to determine the output shape
+        self.pass_trough_layer = False
 
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
@@ -56,7 +64,8 @@ class Layer(metaclass=_ABCMeta):
         else:
             raise ValueError(f"Invaid type activation: {type(activation)} is not (str, Activation, None)")
         
-        self.nodes: list[Node] = [Node(self.activation if isinstance(self.activation, _activation.ScalarFunction) else _activation.Linear()) for _ in range(units)]
+        self.nodes: list[Node] = []
+        self.initialize_nodes(units)
         self.bias = _random.gauss(mu=0, sigma=1) if bias else 0
 
         if input_shape:
@@ -68,6 +77,16 @@ class Layer(metaclass=_ABCMeta):
 
         self.input_shape = input_shape
 
+    def initialize_nodes(self, units: int) -> None:
+        self.nodes.clear()
+
+        if isinstance(self.activation, _activation.ScalarFunction):
+            a_function = self.activation
+        else:
+            a_function = _activation.Linear()
+
+        for _ in range(units):
+            self.nodes.append(Node(a_function))
 
     #! temporary
     def _get_activation_func(self, name: str) -> _activation.Activation | None:
