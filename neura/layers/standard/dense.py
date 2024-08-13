@@ -1,7 +1,6 @@
 import numpy as np
 
 from neura.layers import Layer
-from neura.nodes import Node
 from neura.utils.types import InputValue, OutputValue
 
 
