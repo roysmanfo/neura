@@ -16,6 +16,7 @@ class Flatten(Layer):
         
         self.trainable = False
         self.all_input_at_once = True
+        self.pass_trough_layer = True
 
     def forward(self, x: InputValue) -> OutputValue:
         self.nodes = [self.nodes[0]]
