@@ -6,7 +6,7 @@ from neura import optimizers
 from neura import losses
 from neura import preprocessing 
 from neura.losses import Loss
-from neura.layers import Layer, Input
+from neura.layers import exceptional, Layer, Input
 from neura.utils.types import InputValue, OutputValue
 from neura.evaluation import Evaluation
 
@@ -62,7 +62,7 @@ class Model:
             previous_layer_node_count = len(self.layers[-1].nodes)
             n = 1
             
-            while n < len(self.layers) and self.layers[-n].__class__.__name__ == "Flatten":
+            while n < len(self.layers) and self.layers[-n].pass_trough_layer:
                 n += 1
 
             if n == len(self.layers):
@@ -73,6 +73,8 @@ class Model:
             for n in layer.nodes:
                 n.weights = np.array([_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)])
         else:
+            if isinstance(layer, exceptional.NotFirstLayer):
+                raise RuntimeError("%s (%s)" % (exceptional.NotFirstLayer.errmsg, layer.name))
 
             if not layer.input_shape:
                 raise ValueError("no input_shape provided for the first layer")
