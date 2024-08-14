@@ -38,6 +38,9 @@ class Layer(metaclass=_ABCMeta):
         self.trainable = True
         self.loss = None
 
+        # nome layers like Reshape already know their output shape 
+        self.output_shape: tuple[int, ...] | str | None = None
+
         # pass all data in one go
         self.all_input_at_once = False
 
