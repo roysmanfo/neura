@@ -20,11 +20,11 @@ class ExcetionalLayer:
     """base class for all exceptional layers"""
     errmsg: str = "this is an exceptional layer"
 
-class NotFirstLayer():
+class NotFirstLayer(ExcetionalLayer):
     """A layer that should not be used as input layer"""
     errmsg: str = "this layer should not be used as input layer"
 
-class NotLastLayer():
+class NotLastLayer(ExcetionalLayer):
     """A layer that should not be used as output layer"""
     
     errmsg: str = "this layer should not be used as input layer"
