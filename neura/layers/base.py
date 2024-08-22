@@ -52,6 +52,11 @@ class Layer(metaclass=_ABCMeta):
         # making it difficult for the model to determine the output shape
         self.pass_trough_layer = False
 
+        # some layers behave differently during training, than they would normaly.
+        # for example the Dropout layer becomes transparent if we are not training the model 
+        # this flag is automatically set by the model during training.
+        self.training: bool = False
+
         if units < 1:
             raise ValueError("Invalid number of nodes: units < 1")
         

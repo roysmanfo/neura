@@ -204,6 +204,12 @@ LAYERS:
 
         elif not isinstance(batch_size, int) and batch_size < 1:
             raise ValueError("batch_size must be an int >=1")
+        
+        def set_training_flag(value: bool):            
+            def set_flag(l: Layer): l.training = value
+            return set_flag
+
+        map(set_training_flag(True), self.layers)
 
         for epoch in range(epochs):
             if shuffle and self._is_batch_input(x):
@@ -221,6 +227,8 @@ LAYERS:
 
             if verbose:
                 print(f"Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss / len(x)}")
+        
+        map(set_training_flag(False), self.layers)
 
     def _is_batch_input(self, x: InputValue) -> bool:
         if not self.layers:
