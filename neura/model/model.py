@@ -70,7 +70,11 @@ class Model:
                 # layer, use the network's input_shape then 
                 previous_layer_node_count = self.input_size
             else:
-                previous_layer_node_count = len(self.layers[-1].nodes)
+                prev_layer = self.layers[-1]
+                if prev_layer.output_shape and isinstance(prev_layer.output_shape, tuple):
+                    previous_layer_node_count = Input(prev_layer.output_shape)
+                else:
+                    previous_layer_node_count = len(self.layers[-1].nodes)
 
             for n in layer.nodes:
                 n.weights = np.array([_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)])
