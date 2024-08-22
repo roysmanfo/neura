@@ -31,7 +31,11 @@ class Model:
 
         self.layers: list[Layer] = []
         self.name = "Model" if name is None else str(name) or "Model"
-
+        
+        self.output_shape: tuple[int, ...] | None = None
+        self.input_shape: tuple[int, ...] | None = None
+        self.input_size: int | None = None
+        
         if layers:
             input_shape = layers[0].input_shape
 
@@ -42,16 +46,14 @@ class Model:
                 raise ValueError("input_shape can only contain int values")
 
             self.input_size = Input(input_shape) if input_shape else 1
+            self.input_shape = input_shape
 
             if layers:
                 for layer in layers:
                     if not layer:
                         raise ValueError(f"invalid layer supplied: '{layer}'")
                     self.add_layer(layer)
-        else:
-            input_shape = None
-            self.input_size = None
-
+            
 
 
     def add_layer(self, layer: Layer):
@@ -75,6 +77,14 @@ class Model:
                     previous_layer_node_count = Input(prev_layer.output_shape)
                 else:
                     previous_layer_node_count = len(self.layers[-1].nodes)
+                
+                # assert that the provided input_shape is compatible with the rest of the network
+                if layer.input_shape and layer.input_shape != prev_layer.output_shape:
+                    raise RuntimeError(f"the input shape of layer {len(self.layers) + 1} " \
+                                       f"({layer.name}) is incompatible with output shape "
+                                       f"{prev_layer.output_shape} ({prev_layer.name})")
+                
+                layer.input_shape = prev_layer.output_shape
 
             for n in layer.nodes:
                 n.weights = np.array([_random.uniform(-1, 1) for _ in range(previous_layer_node_count or 1)])
@@ -93,6 +103,14 @@ class Model:
                 n.weights = np.array([_random.uniform(-1, 1) for _ in range(self.input_size)])
 
         self.layers.append(layer)
+        
+        # modify the output shape
+        if layer.output_shape:
+            self.output_shape = layer.output_shape
+        else:
+            # in this case the output shape depends on the number of nodes
+            self.output_shape = (len(layer.nodes),)        
+
 
     def compile(self, loss: Union[Loss, str], optimizer: Optional[optimizers.Optimizer] = None, metrics: Optional[list[Any]] = None):
         assert isinstance(loss, Loss), "`loss` must be a loss function"
