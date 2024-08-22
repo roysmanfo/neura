@@ -31,6 +31,12 @@ class Dropout(Layer, NotFirstLayer):
             raise ValueError("incompatible type: expected np.ndarray, received:", type(x).__name__)
 
         self.input = x
+
+        # outside training this layer becomes transparent
+        if not self.training:
+            self.outputs = x
+            return x
+
         node_probability = self.generator.normal(0, 1, x.size).reshape(x.shape)
         self.outputs = np.where(node_probability < self.rate, x * 0, x / (1 - self.rate))
         return self.outputs
