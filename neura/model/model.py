@@ -66,6 +66,8 @@ class Model:
                 n += 1
 
             if n == len(self.layers):
+                # no upper layer was able to provide an actuall input_shape for this 
+                # layer, use the network's input_shape then 
                 previous_layer_node_count = self.input_size
             else:
                 previous_layer_node_count = len(self.layers[-1].nodes)
