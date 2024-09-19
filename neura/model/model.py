@@ -141,17 +141,13 @@ class Model:
             layer_info += f"\t\tnodes: {len(layer.nodes)}"
             layer_info += f"\tparams: {p}\n"
 
-        summary = f"""
-{self.name}
-===============================================
-Total number of parameters: {params}
-===============================================
-
-LAYERS:
-
-{layer_info}
-===============================================
-"""
+        summary =  (f"\n{self.name}\n"
+                    "===============================================\n" 
+                    f"Total number of parameters: {params}\n" 
+                    "===============================================\n\n"
+                    "LAYERS:\n\n"
+                    f"{layer_info}\n"
+                    "===============================================\n")
         if verbose:
             print(summary)
         return summary
