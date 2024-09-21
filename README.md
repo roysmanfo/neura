@@ -67,3 +67,14 @@ results:
 [0. 0. 0. 0. 0. 0. 1. 0. 0. 0.]
 [9.992007221626415e-17]
 ```
+
+## Installation
+1. clone this repository
+```
+git clone https://github.com/roysmanfo/neura 
+```
+2. install using pip
+```
+pip install .
+```
+
