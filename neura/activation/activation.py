@@ -33,7 +33,7 @@ class Sigmoid(ScalarFunction):
 
     def derivative(self, x: np.float64) -> np.float64:
         sigmoid_x = self.apply_formula(x)
-        return x * 1 - sigmoid_x
+        return x * (1 - sigmoid_x)
     
 class Exponential(ScalarFunction):
     """
